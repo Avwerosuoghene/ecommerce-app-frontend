@@ -1,38 +1,35 @@
-.App {
-  text-align: center;
+@font-face {
+    font-family: 'manropeExtraLight';
+    src: url('assets/fonts/Manrope-VariableFont_wght.ttf')
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+    font-family: 'manropelight';
+    src: url('assets/fonts/Manrope-Light.ttf')
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@font-face {
+    font-family: 'manropeRegular';
+    src: url('assets/fonts/Manrope-Regular.ttf')
+}
+
+@font-face {
+    font-family: 'manropeMedium';
+    src: url('assets/fonts/Manrope-Medium.ttf')
+}
+
+@font-face {
+    font-family: 'manropeSemiBold';
+    src: url('assets/fonts/Manrope-SemiBold.ttf')
+}
+
+@font-face {
+    font-family: 'manropeBold';
+    src: url('assets/fonts/Manrope-Bold.ttf')
+}
+
+
+* {
+    font-family: "manropeRegular";
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+  

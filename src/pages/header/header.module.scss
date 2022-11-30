@@ -1,0 +1,50 @@
+* {
+  font-family: "manropeSemiBold";
+}
+
+.nav_container {
+  * {
+    color: #fff;
+  }
+
+  padding: 0 165px;
+  background:linear-gradient(#0e0e0e,rgb(19,19,19));
+  background-color: #0e0e0e;
+
+  .nav_body {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    padding: 32px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.342);
+  }
+
+  h1 {
+    font-size: 25px;
+    font-family: "manropeBold";
+    margin: 0;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    text-decoration: none;
+    display: flex;
+    gap: 20px;
+
+    a {
+      text-decoration: none;
+      color: #fff;
+      cursor: pointer;
+
+      &.active {
+        color: #fbaf85;
+      }
+    }
+  }
+
+  img {
+    width: 23.33px;
+    height: 20px;
+  }
+}
