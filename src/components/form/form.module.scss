@@ -1,0 +1,23 @@
+
+
+    .formControl {
+        margin-block: 16px;
+
+        @media(max-width: 550px) {
+            ._input, ._input_label {
+                font-size: 12px;
+            }
+
+            ._input {
+                ._input_icon, ._input_iconButton {
+                    font-size: 20px;
+                }
+                ._input_iconButton {
+                        svg {
+                            font-size: 20px;
+                        }
+                   }
+              
+            }
+        }
+    }

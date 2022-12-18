@@ -11,23 +11,14 @@ section.signup_container {
     height: 100%;
   
 
-    Button {
-       &.signup_button {
-        background-color: #D87D4A;
-        color: #fff;
-        width: 100%;
-        max-width: 400px;
+       .signup_button {
         padding-block: 14px;
         margin-block: 20px;
-
-        &:disabled {
-            background-color: rgb(186, 186, 186);
-            color: rgb(109, 109, 109);
-        }
+        width: 100%;
        }
 
      
-    }
+
 
 
     
@@ -61,9 +52,9 @@ section.signup_container {
         margin-top: 40px;
         max-width: 400px;
 
-        .signup_formControl {
-            margin-block: 16px;
-        }
+        // .signup_formControl {
+        //     margin-block: 16px;
+        // }
     }
 
     .loggedIn {
@@ -168,22 +159,22 @@ section.signup_container {
             line-height: 12px;
         }
 
-        .signup_formControl {
-            .signup_input, .signup_input_label {
-                font-size: 12px;
-            }
+        // .signup_formControl {
+        //     .signup_input, .signup_input_label {
+        //         font-size: 12px;
+        //     }
 
-            .signup_input {
-                .signup_input_icon, .signup_input_iconButton {
-                    font-size: 20px;
-                }
-                .signup_input_iconButton {
-                        svg {
-                            font-size: 20px;
-                        }
-                   }
+        //     .signup_input {
+        //         .signup_input_icon, .signup_input_iconButton {
+        //             font-size: 20px;
+        //         }
+        //         .signup_input_iconButton {
+        //                 svg {
+        //                     font-size: 20px;
+        //                 }
+        //            }
               
-            }
-        }
+        //     }
+        // }
     } 
 }

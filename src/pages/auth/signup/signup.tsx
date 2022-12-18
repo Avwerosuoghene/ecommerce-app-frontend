@@ -7,7 +7,7 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
-  Button,
+  // Button,
   FormHelperText,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
@@ -17,7 +17,11 @@ import classes from "./signup.module.scss";
 import { ReactComponent as MailIcon } from "../../../assets/images/Message.svg";
 import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
 import { ReactComponent as ProfileIcon } from "../../../assets/images/Profile.svg";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { signUp } from "../../../services/api";
+import Button from "../../../components/UI/Button";
+import CusForm from "../../../components/form/form";
+
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 const passwordTest = new RegExp(
@@ -70,6 +74,8 @@ const userNameReducer = (state: any, action: any) => {
 
 
 const Signup: React.FC<any> = (props) => {
+  const [openSnackBar, setOpenSnackBar] = useState(false)
+  const navigate = useNavigate();
   const [formIsValid, setFormIsValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -88,14 +94,34 @@ const Signup: React.FC<any> = (props) => {
     isValid: false,
   });
 
-  const [termsnConditionsIsValidState, setTermsnConditionsIsValidState] = useState(false)
+  const [termsnConditionsIsValidState, setTermsnConditionsIsValidState] = useState(false);
+
 
   const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
   const { isValid: userNameIsValid } = userNameState;
 
-  const formSubmissionHandler = (event: any) => {
+
+  const formSubmissionHandler = async (event: any) => {
     event.preventDefault();
+    console.log('form submit handler called')
+    const signUpPayload = {
+      name: userNameState.value,
+      email: emailState.value,
+      password: passwordState.value
+    };
+    try {
+      const signupResponse = await signUp(signUpPayload);
+      // if (signupResponse)
+      navigate("/auth/login")
+      console.log(signupResponse)
+
+    } catch (error) {
+
+      console.log(`error in signup is ${error}`)
+    }
+   
+
   };
 
   useEffect(() => {
@@ -152,6 +178,53 @@ const Signup: React.FC<any> = (props) => {
     event.preventDefault();
   };
 
+  const renderedForms = [
+    {
+      formControlStyle: classes.emailForm ,
+      labelFor: "signup-username" ,
+      label : "Full Name",
+      placeholder : "Insert Full Name",
+      inputState : userNameState,
+      error: !userNameState.isValid,
+      startAdornmentIcon :   <ProfileIcon stroke="green" />,
+      endAdornment: null,
+      inputChangeHandler : userNameChangeHandler,
+      inputValidator : userNameValidatorHandler,
+      errorMessage :" Kindly enter a valid name",
+      type : "text"
+    },
+    {
+      formControlStyle: classes.email ,
+      labelFor: "signup-email" ,
+      label : "Email",
+      placeholder : "Insert Email",
+      inputState : emailState,
+      error: !emailState.isValid,
+      startAdornmentIcon :    <MailIcon stroke="green" />,
+      endAdornment: null,
+      inputChangeHandler : emailChangeHandler,
+      inputValidator : emailValidatorHandler,
+      errorMessage :"  Kindly enter a valid mail",
+      type : "text"
+    },
+    {
+      formControlStyle: classes.password ,
+      labelFor: "signup-password" ,
+      label : "Password",
+      placeholder : "Enter Password",
+      inputState : passwordState,
+      error: !passwordState.isValid,
+      startAdornmentIcon :   <LockIcon />,
+      endAdornmentIcon:    showPassword ? <VisibilityOff /> : <Visibility />,
+      endAdornmentIconClick: handleClickShowPassword,
+      endAdornmentIconMouseDown: handleMouseDownPassword,
+      inputChangeHandler : passwordChangeHandler,
+      inputValidator : passwordValidatorHandler,
+      errorMessage :"  Password must contain atleast one number, one upper case character and be atleast 6 characters long",
+      type : showPassword ? "text" : "password",
+    }
+  ]
+
   return (
     <section className={classes.signup_container}>
       <h1>Create Account</h1>
@@ -162,7 +235,28 @@ const Signup: React.FC<any> = (props) => {
       <form onSubmit={formSubmissionHandler} className={classes.signup_form}>
         {/* UserName Form */}
 
-        <FormControl
+        {renderedForms.map((form: any) => (
+          <CusForm 
+          key = {form.label}
+          formControlStyle={form.formControlStyle} 
+          labelFor={form.labelFor}
+          label = {form.label}
+          placeholder = {form.placeholder}
+          inputState = {form.inputState}
+          startAdornmentIcon = {form.startAdornmentIcon && form.startAdornmentIcon}
+          endAdornmentIcon = {  form.endAdornmentIcon && form.endAdornmentIcon}
+          endAdornmentIconClick = {form.endAdornmentIconClick && form.endAdornmentIconClick}
+          endAdornmentIconMouseDown = {form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown}
+          inputChangeHandler = {form.inputChangeHandler}
+          inputValidator = {form.inputValidator}
+          errorMessage ={form.errorMessage}
+          type = {form.type}
+          error = {form.error}
+          // formHelperText = {form.formHelperText && form.formHelperText}
+          />
+        ))}
+
+        {/* <FormControl
           sx={{ m: 1, width: "100%" }}
           variant="outlined"
           className={`${classes.signup_formControl} ${classes.userName}`}
@@ -199,10 +293,10 @@ const Signup: React.FC<any> = (props) => {
               Kindly enter a valid name
             </FormHelperText>
           )}
-        </FormControl>
+        </FormControl> */}
 
         {/* Email Form */}
-        <FormControl
+        {/* <FormControl
           sx={{ m: 1, width: "100%" }}
           variant="outlined"
           className={`${classes.signup_formControl} ${classes.email}`}
@@ -239,10 +333,10 @@ const Signup: React.FC<any> = (props) => {
               Kindly enter a valid mail
             </FormHelperText>
           )}
-        </FormControl>
+        </FormControl> */}
 
         {/* Password Form */}
-        <FormControl
+        {/* <FormControl
           sx={{ m: 1, width: "100%" }}
           variant="outlined"
           className={`${classes.signup_formControl} ${classes.password}`}
@@ -289,7 +383,7 @@ const Signup: React.FC<any> = (props) => {
               and be atleast 6 characters long
             </FormHelperText>
           )}
-        </FormControl>
+        </FormControl> */}
         <div className={classes.loggedIn}>
         <FormControlLabel
           control={
@@ -308,20 +402,16 @@ const Signup: React.FC<any> = (props) => {
         />
       </div>
 
-
       <Button
-        variant="text"
-        className={classes.signup_button}
         disabled={!formIsValid}
         type = "submit"
+        design = "orange"
+        style = {classes.signup_button}
+
       >
         SIGNUP
       </Button>
       </form>
-
-     
-
-
       <div className={classes.login_action}>
         <p className={classes.login_text}>Already Have an Account? </p>
 

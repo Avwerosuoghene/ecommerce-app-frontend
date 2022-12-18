@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Fragment } from "react";
 
 import Header from "./pages/header/header";
+import dotenv from "dotenv";
 import Home from "./pages/home/home";
 import HeadPhones from "./pages/headphones/headphones";
 import EarPhones from "./pages/earphones/earphones";

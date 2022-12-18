@@ -1,0 +1,17 @@
+Button.button {
+    // width: 100%;
+    max-width: 400px;
+    min-height: 42px;
+    
+    &.orange {
+        background-color: #D87D4A;
+        color: #fff;
+
+       
+    }
+
+    &:disabled  {
+        background-color: rgb(186, 186, 186);
+        color: rgb(109, 109, 109);
+    }
+}

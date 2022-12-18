@@ -11,23 +11,12 @@ section.login_container {
     height: 100%;
   
 
-    Button {
-       &.login_button {
-        background-color: #D87D4A;
-        color: #fff;
-        width: 100%;
-        max-width: 400px;
+       .login_button {
         padding-block: 14px;
         margin-block: 20px;
-
-        &:disabled {
-            background-color: rgb(186, 186, 186);
-            color: rgb(109, 109, 109);
-        }
+        width: 100%;
        }
 
-     
-    }
 
 
     
@@ -61,9 +50,9 @@ section.login_container {
         margin-top: 40px;
         max-width: 400px;
 
-        .login_formControl {
-            margin-block: 16px;
-        }
+        // .login_formControl {
+        //     margin-block: 16px;
+        // }
     }
 
     .loggedIn {
@@ -122,28 +111,13 @@ section.login_container {
             font-size: 14px;
             line-height: 14px; 
         }
-    
-        // p {
 
-        //     font-size: 12px;
-        // }
-    
-        // a {
-        //     font-size: 12px;
-        //     font-family: "manropeSemiBold";
-        //     text-decoration: none;
-        //     color: #D87D4A;
-        // }
     }   
 }
 
 @media (max-width: 550px) {
     section.login_container {
-        // .login_form {
-        //     max-width: 300px
-           
-            
-        // }
+      
         Button {
             &.login_button {
           
@@ -168,22 +142,22 @@ section.login_container {
             line-height: 12px;
         }
 
-        .login_formControl {
-            .login_input, .login_input_label {
-                font-size: 12px;
-            }
+        // .login_formControl {
+        //     .login_input, .login_input_label {
+        //         font-size: 12px;
+        //     }
 
-            .login_input {
-                .login_input_icon, .login_input_iconButton {
-                    font-size: 20px;
-                }
-                .login_input_iconButton {
-                        svg {
-                            font-size: 20px;
-                        }
-                   }
+        //     .login_input {
+        //         .login_input_icon, .login_input_iconButton {
+        //             font-size: 20px;
+        //         }
+        //         .login_input_iconButton {
+        //                 svg {
+        //                     font-size: 20px;
+        //                 }
+        //            }
               
-            }
-        }
+        //     }
+        // }
     } 
 }

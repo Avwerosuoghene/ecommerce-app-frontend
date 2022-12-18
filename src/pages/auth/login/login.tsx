@@ -7,19 +7,20 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
-  Button,
+  // Button,
   FormHelperText,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import classes from "./login.module.scss";
 import { ReactComponent as MailIcon } from "../../../assets/images/Message.svg";
 import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
-import { NavLink } from "react-router-dom";
+import Button from "../../../components/UI/Button";
+import CusForm from "../../../components/form/form";
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-// const passwordTest = new RegExp(/^(?=.*\d{1,})(?=.*[A-Z]{1,})[\w\d[\]{};:=<>_+^#$@!%*?&\.]{6,}$/)
 
 const reducerFunction = (test: any, type: string, action: any, state: any) => {
   if (action.type === "INPUT") {
@@ -55,6 +56,7 @@ const passwordReducer = (state: any, action: any) => {
 };
 
 const Login: React.FC<any> = (props) => {
+  const navigate = useNavigate();
   const [formIsValid, setFormIsValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -73,6 +75,7 @@ const Login: React.FC<any> = (props) => {
 
   const formSubmissionHandler = (event: any) => {
     event.preventDefault();
+
   };
 
   useEffect(() => {
@@ -115,99 +118,70 @@ const Login: React.FC<any> = (props) => {
     event.preventDefault();
   };
 
+
+
+  
+  
+
+  const renderedForms = [
+    {
+      formControlStyle: classes.emailForm ,
+      labelFor: "login-email" ,
+      label : "Email",
+      placeholder : "Insert Email",
+      inputState : emailState,
+      error: !emailState.isValid,
+      startAdornmentIcon :  <MailIcon stroke="green" /> ,
+      endAdornment: null,
+      inputChangeHandler : emailChangeHandler,
+      inputValidator : emailValidatorHandler,
+      errorMessage :"Kindly enter a valid mail",
+      type : "text"
+    },
+    {
+      formControlStyle: classes.passwordForm ,
+      labelFor: "login-password" ,
+      label : "Password",
+      placeholder : "Enter Password",
+      inputState : passwordState,
+      error: !passwordState.isValid,
+      startAdornmentIcon :   <LockIcon />,
+      endAdornmentIcon:    showPassword ? <VisibilityOff /> : <Visibility />,
+      endAdornmentIconClick: handleClickShowPassword,
+      endAdornmentIconMouseDown: handleMouseDownPassword,
+      inputChangeHandler : passwordChangeHandler,
+      inputValidator : passwordValidatorHandler,
+      errorMessage :"   Invalid Password",
+      type : showPassword ? "text" : "password"
+    }
+  ]
+
   return (
     <section className={classes.login_container}>
       <h1>Welcome Back!</h1>
       <h4>Please Login to continue purchasing on our website</h4>
       <form onSubmit={formSubmissionHandler} className={classes.login_form}>
         {/* Email Form */}
-        <FormControl
-          sx={{ m: 1, width: "100%" }}
-          variant="outlined"
-          className={`${classes.login_formControl} ${classes.email}`}
-        >
-          <InputLabel
-            htmlFor="login-email"
-            className={classes.login_input_label}
-          >
-            Email
-          </InputLabel>
-          <OutlinedInput
-            className={classes.login_input}
-            placeholder="Insert Email"
-            type="text"
-            error={!emailState.isValid}
-            value={emailState.value}
-            startAdornment={
-              <InputAdornment position="start">
-                <SvgIcon
-                  fontSize="small"
-                  stroke="red"
-                  className={classes.login_input_icon}
-                >
-                  <MailIcon stroke="green" />
-                </SvgIcon>
-              </InputAdornment>
-            }
-            label="Email"
-            onChange={emailChangeHandler}
-            onBlur={emailValidatorHandler}
+        {renderedForms.map((form: any) => (
+          <CusForm 
+          key = {form.label}
+          formControlStyle={form.formControlStyle} 
+          labelFor={form.labelFor}
+          label = {form.label}
+          placeholder = {form.placeholder}
+          inputState = {form.inputState}
+          startAdornmentIcon = {form.startAdornmentIcon && form.startAdornmentIcon}
+          endAdornmentIcon = {  form.endAdornmentIcon && form.endAdornmentIcon}
+          endAdornmentIconClick = {form.endAdornmentIconClick && form.endAdornmentIconClick}
+          endAdornmentIconMouseDown = {form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown}
+          inputChangeHandler = {form.inputChangeHandler}
+          inputValidator = {form.inputValidator}
+          errorMessage ={form.errorMessage}
+          type = {form.type}
+          error = {form.error}
           />
-          {!emailState.isValid && (
-            <FormHelperText error id="email-error">
-              Kindly enter a valid mail
-            </FormHelperText>
-          )}
-        </FormControl>
+        ))}
 
-        {/* Password Form */}
-        <FormControl
-          sx={{ m: 1, width: "100%" }}
-          variant="outlined"
-          className={`${classes.login_formControl} ${classes.password}`}
-        >
-          <InputLabel
-            htmlFor="login-password"
-            className={classes.login_input_label}
-          >
-            Password
-          </InputLabel>
-          <OutlinedInput
-            className={classes.login_input}
-            placeholder="Enter Password"
-            type={showPassword ? "text" : "password"}
-            error={!passwordState.isValid}
-            value={passwordState.value}
-            startAdornment={
-              <InputAdornment position="start">
-                <SvgIcon fontSize="small" className={classes.login_input_icon}>
-                  <LockIcon />
-                </SvgIcon>
-              </InputAdornment>
-            }
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                  className={classes.login_input_iconButton}
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-            onChange={passwordChangeHandler}
-            onBlur={passwordValidatorHandler}
-          />
-          {!passwordState.isValid && (
-            <FormHelperText error id="passwordError">
-              Invalid Password
-            </FormHelperText>
-          )}
-        </FormControl>
       </form>
 
       <div className={classes.loggedIn}>
@@ -215,24 +189,29 @@ const Login: React.FC<any> = (props) => {
           control={<Checkbox defaultChecked />}
           label="Keep me logged in"
         />
-    
-          <NavLink to="../password-reset" className={classes.login_navlink}> Forgot Password?</NavLink>
-     
+
+        <NavLink to="../password-reset" className={classes.login_navlink}>
+          {" "}
+          Forgot Password?
+        </NavLink>
       </div>
 
       <Button
-        variant="text"
-        className={classes.login_button}
         disabled={!formIsValid}
+        type="button"
+        design="orange"
+        style={classes.login_button}
       >
         LOGIN
       </Button>
 
       <div className={classes.signup_action}>
         <p className={classes.signup_text}>Don't Have an Account? </p>
-   
-          <NavLink to="../signup" className={classes.login_navlink}> Sign Up</NavLink>
-    
+
+        <NavLink to="../signup" className={classes.login_navlink}>
+          {" "}
+          Sign Up
+        </NavLink>
       </div>
     </section>
   );

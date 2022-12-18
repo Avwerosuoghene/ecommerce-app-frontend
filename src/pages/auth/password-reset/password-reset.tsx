@@ -7,7 +7,7 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
-  Button,
+  // Button,
   FormHelperText,
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
@@ -17,7 +17,8 @@ import classes from "./password-reset.module.scss";
 import { ReactComponent as MailIcon } from "../../../assets/images/Message.svg";
 import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
 import { useNavigate } from "react-router-dom";
-// import { ReactComponent as SuccessIcon } from "../../../assets/images/Pass.svg";
+import Button from "../../../components/UI/Button";
+import CusForm from "../../../components/form/form";
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 const passwordTest = new RegExp(
@@ -153,6 +154,56 @@ const PasswordReset: React.FC<any> = (props) => {
     navigate('/auth/login')
   }
 
+  const renderedForms = [
+    {
+      formControlStyle: classes.email ,
+      labelFor: "password_reset" ,
+      label : "Email",
+      placeholder : "Insert Email",
+      inputState : emailState,
+      error: !emailState.isValid,
+      startAdornmentIcon :    <MailIcon stroke="green" />,
+      endAdornment: null,
+      inputChangeHandler : emailChangeHandler,
+      inputValidator : emailValidatorHandler,
+      errorMessage :"  Kindly enter a valid mail",
+      type : "text"
+    },
+    {
+      formControlStyle: classes.password ,
+      labelFor: "password_reset-password" ,
+      label : "Password",
+      placeholder : "Enter Password",
+      inputState : passwordState,
+      error: !passwordState.isValid,
+      startAdornmentIcon :   <LockIcon />,
+      endAdornmentIcon:    showPassword ? <VisibilityOff /> : <Visibility />,
+      endAdornmentIconClick: handleClickShowPassword,
+      endAdornmentIconMouseDown: handleMouseDownPassword,
+      inputChangeHandler : passwordChangeHandler,
+      inputValidator : passwordValidatorHandler,
+      errorMessage :"  Invalid Password",
+      type : showPassword ? "text" : "password",
+    },
+    {
+      formControlStyle: classes.password ,
+      labelFor: "confirm password" ,
+      label : "Confirm Password",
+      placeholder : "Re-enter Password",
+      inputState : confirmPasswordState,
+      error: !passwordMatch,
+      startAdornmentIcon :   <LockIcon />,
+      endAdornmentIcon:    showConfirmPassword ? <VisibilityOff /> : <Visibility />,
+      endAdornmentIconClick: handleClickShowConfirmPassword,
+      endAdornmentIconMouseDown: handleMouseDownPassword,
+      inputChangeHandler : confirmPasswordChangeHandler,
+      inputValidator : confirmPasswordValidatorHandler,
+      errorMessage :"Passwords do not macth",
+      type : showConfirmPassword ? "text" : "password",
+    }
+  ]
+
+
   const mainPage = (
     <div className={classes.formPage}>
       <h1>Reset Password</h1>
@@ -161,8 +212,28 @@ const PasswordReset: React.FC<any> = (props) => {
         onSubmit={formSubmissionHandler}
         className={classes.password_reset_form}
       >
+         {renderedForms.map((form: any) => (
+          <CusForm 
+          key = {form.label}
+          formControlStyle={form.formControlStyle} 
+          labelFor={form.labelFor}
+          label = {form.label}
+          placeholder = {form.placeholder}
+          inputState = {form.inputState}
+          startAdornmentIcon = {form.startAdornmentIcon && form.startAdornmentIcon}
+          endAdornmentIcon = {  form.endAdornmentIcon && form.endAdornmentIcon}
+          endAdornmentIconClick = {form.endAdornmentIconClick && form.endAdornmentIconClick}
+          endAdornmentIconMouseDown = {form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown}
+          inputChangeHandler = {form.inputChangeHandler}
+          inputValidator = {form.inputValidator}
+          errorMessage ={form.errorMessage}
+          type = {form.type}
+          error = {form.error}
+          />
+        ))}
         {/* Email Form */}
-        <FormControl
+
+        {/* <FormControl
           sx={{ m: 1, width: "100%" }}
           variant="outlined"
           className={`${classes.password_reset_formControl} ${classes.email}`}
@@ -199,10 +270,10 @@ const PasswordReset: React.FC<any> = (props) => {
               Kindly enter a valid mail
             </FormHelperText>
           )}
-        </FormControl>
+        </FormControl> */}
 
         {/* Password Form */}
-        <FormControl
+        {/* <FormControl
           sx={{ m: 1, width: "100%" }}
           variant="outlined"
           className={`${classes.password_reset_formControl} ${classes.password}`}
@@ -251,10 +322,10 @@ const PasswordReset: React.FC<any> = (props) => {
               Invalid Password
             </FormHelperText>
           )}
-        </FormControl>
+        </FormControl> */}
 
         {/* Confirm Pass */}
-        <FormControl
+        {/* <FormControl
           sx={{ m: 1, width: "100%" }}
           variant="outlined"
           className={`${classes.password_reset_formControl} ${classes.password}`}
@@ -303,12 +374,15 @@ const PasswordReset: React.FC<any> = (props) => {
               Passwords do not macth
             </FormHelperText>
           )}
-        </FormControl>
-        <Button
-        variant="text"
-        type="submit"
-        className={classes.password_reset_button}
+        </FormControl> */}
+    
+
+      <Button
         disabled={!formIsValid}
+        type = "submit"
+        design = "orange"
+        style = {classes.password_reset_button}
+
       >
         RESET
       </Button>
