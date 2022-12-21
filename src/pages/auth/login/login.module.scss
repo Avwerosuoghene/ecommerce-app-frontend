@@ -1,163 +1,159 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-
 section.login_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+
+  .login_button {
+    padding-block: 14px;
+    margin-block: 20px;
+    width: 100%;
+  }
+
+  h1 {
+    font-family: "manropeBold";
+    font-size: 40px;
+    line-height: 40px;
+    margin: 0;
+  }
+
+  h4 {
+    font-family: "manropeRegular";
+    font-size: 16px;
+    line-height: 16px;
+  }
+
+  p {
+    font-family: "manropeRegular";
+    font-size: 12px;
+  }
+
+  .login_navlink {
+    font-size: 12px;
+    font-family: "manropeSemiBold";
+    text-decoration: none;
+    color: #d87d4a;
+  }
+
+  .login_form {
+    width: 100%;
+    margin-top: 40px;
+    max-width: 400px;
+
+    // .login_formControl {
+    //     margin-block: 16px;
+    // }
+  }
+
+  .loggedIn {
+    width: 100%;
+    max-width: 400px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    height: 100%;
+    justify-content: space-between;
+
+    label span {
+      font-size: 12px;
+    }
+  }
+
+  .signup_action {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    p.signup_text {
+      margin-right: 4px;
+    }
+
+    .signup_text {
+      font-family: "manropeSemiBold";
+    }
+  }
+
+  .loader {
   
+    position: absolute;
+    bottom: 2%;
+    transform: translate(-50%, -50%);
+    // border: 4px solid #D87D4A;
 
-       .login_button {
-        padding-block: 14px;
-        margin-block: 20px;
-        width: 100%;
-       }
+    @media (max-width: 550px) {
+        bottom: unset;
+        top: 10%;
+    } 
 
-
-
-    
-    h1 {
-        font-family: "manropeBold";
-        font-size: 40px;
-        line-height: 40px;
-        margin: 0;
-    }
-
-    h4{
-        font-family: "manropeRegular";
-        font-size: 16px;
-        line-height: 16px; 
-    }
-
-    p {
-        font-family: "manropeRegular";
-        font-size: 12px;
-    }
-
-    .login_navlink {
-        font-size: 12px;
-        font-family: "manropeSemiBold";
-        text-decoration: none;
-        color: #D87D4A;
-    }
-
-    .login_form {
-        width: 100%;
-        margin-top: 40px;
-        max-width: 400px;
-
-        // .login_formControl {
-        //     margin-block: 16px;
-        // }
-    }
-
-    .loggedIn {
-        width: 100%;
-        max-width: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-   
-            label span {
-                font-size: 12px;
-            }
-        
-
-       
-
-        
-    }
-
-    .signup_action {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        p.signup_text  {
-            margin-right: 4px;
-        }
-
-        .signup_text {
-            font-family: "manropeSemiBold";
-        }
-    }
+  }
 }
 
 @media (max-width: 850px) {
-    section.login_container {
-
-        Button {
-            &.login_button {
-          
-             padding-block: 8px;
-
-            }
-         }
+  section.login_container {
+    .loader {
       
-        h1 {
-            font-size: 30px;
-            line-height: 30px;
-     
-        }
-    
-        h4{
-   
-            font-size: 14px;
-            line-height: 14px; 
-        }
+    }
+    Button {
+      &.login_button {
+        padding-block: 8px;
+      }
+    }
 
-    }   
+    h1 {
+      font-size: 30px;
+      line-height: 30px;
+    }
+
+    h4 {
+      font-size: 14px;
+      line-height: 14px;
+    }
+  }
 }
 
 @media (max-width: 550px) {
-    section.login_container {
-      
-        Button {
-            &.login_button {
-          
-             padding-block: 6px;
+  section.login_container {
+    Button {
+      &.login_button {
+        padding-block: 6px;
+      }
+    }
 
-            }
-         }
+    h1 {
+      font-size: 24px;
+      line-height: 24px;
+    }
 
-         h1 {
-            font-size: 24px;
-            line-height: 24px;
-     
-        }
+    h4 {
+      font-size: 12px;
+      line-height: 14px;
+    }
 
-        h4 {
-            font-size: 12px;
-            line-height: 14px;
-        }
+    p {
+      font-size: 10px;
+      line-height: 12px;
+    }
 
-        p {
-            font-size: 10px;
-            line-height: 12px;
-        }
+    // .login_formControl {
+    //     .login_input, .login_input_label {
+    //         font-size: 12px;
+    //     }
 
-        // .login_formControl {
-        //     .login_input, .login_input_label {
-        //         font-size: 12px;
-        //     }
+    //     .login_input {
+    //         .login_input_icon, .login_input_iconButton {
+    //             font-size: 20px;
+    //         }
+    //         .login_input_iconButton {
+    //                 svg {
+    //                     font-size: 20px;
+    //                 }
+    //            }
 
-        //     .login_input {
-        //         .login_input_icon, .login_input_iconButton {
-        //             font-size: 20px;
-        //         }
-        //         .login_input_iconButton {
-        //                 svg {
-        //                     font-size: 20px;
-        //                 }
-        //            }
-              
-        //     }
-        // }
-    } 
+    //     }
+    // }
+  }
 }

@@ -1,4 +1,4 @@
-import { IsignUpPayload } from "../models/types";
+import { IloginPayload, IpasswordResetPayload, IsignUpPayload } from "../models/types";
 import { BASE_URL } from "../environment";
 import axios from "axios";
 
@@ -13,18 +13,41 @@ export const signUp = async (
     const response = await axios.put(`${baseUrl}auth/signup`, 
     signUpPayload,
       );
-      // console.log(response)
-      // console.log('inside response')
       return { response };
   } catch(error: any) {
-    const errorRes = error.response.data
-    // console.log(error.response.data)
+    const errorRes = error
     return errorRes
-  
-    // return throwError(() => {
-    //   console.log('inside thrown ');
-    //   return errorRes;
-    // });
-  }
 
+  }
+};
+
+export const passwordReset = async (
+  passwordResetPayload: IpasswordResetPayload
+) => {
+  try {
+    const response = await axios.put(`${baseUrl}auth/passwordReset`, 
+    passwordResetPayload
+      );
+      return { response };
+  } catch(error: any) {
+    console.log(error)
+    const errorRes = error
+    return errorRes
+  }
+};
+
+
+export const login = async (
+  loginPayload: IloginPayload
+) => {
+  try {
+    const response = await axios.post(`${baseUrl}auth/login`, 
+    loginPayload
+      );
+      return { response };
+  } catch(error: any) {
+    console.log(error)
+    const errorRes = error
+    return errorRes
+  }
 };

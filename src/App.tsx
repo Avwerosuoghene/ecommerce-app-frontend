@@ -1,46 +1,37 @@
 import "./App.css";
 import { Route, Routes, Navigate, Router } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 
 import Header from "./pages/header/header";
 import dotenv from "dotenv";
-import Home from "./pages/home/home";
 import HeadPhones from "./pages/headphones/headphones";
 import EarPhones from "./pages/earphones/earphones";
 import Speakers from "./pages/speakers/speakers";
 import Auth from "./pages/auth/auth";
-import Login from "./pages/auth/login/login";
 import Signup from "./pages/auth/signup/signup";
 import PasswordReset from "./pages/auth/password-reset/password-reset";
+import AppRoutes from "./App-routes";
+import { useDispatch, useSelector } from "react-redux";
+import SnackBar from "./components/snackbar/snackbar";
+import { snackBarActions } from "./redux/store/snackbar";
+import { authActions } from "./redux/store/auth";
 
 function App() {
+    const snackBarState = useSelector((state: any) => state.snackBar);
+    console.log(snackBarState)
+
+    const handleSnackBarClose = () => {
+      dispatch(snackBarActions.close());
+    };
+    const dispatch = useDispatch();
+
+
   return (
     <Fragment>
       {/* <Header/> */}
-      <Routes>
-        <Route path="/" element={<Navigate to="/auth" />} />
-      </Routes>
-      <Routes>
-        <Route path="/auth" element={<Auth />}>
-          <Route path="/auth" element={<Navigate to="login" />} />
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
-          <Route path="password-reset" element={<PasswordReset />} />
-        </Route>
-      </Routes>
-      <Routes>
-        <Route path="/home" element={<Home />} />
-      </Routes>
-      <Routes>
-        <Route path="/headphones" element={<HeadPhones />} />
-      </Routes>
-      <Routes>
-        <Route path="/earphones" element={<EarPhones />} />
-      </Routes>
-      <Routes>
-        <Route path="/speakers" element={<Speakers />} />
-      </Routes>
+      <AppRoutes/>
+      <SnackBar open={snackBarState.isOpen} close={handleSnackBarClose}  severity = {snackBarState.severity} message = {snackBarState.message} />
     </Fragment>
   );
 }

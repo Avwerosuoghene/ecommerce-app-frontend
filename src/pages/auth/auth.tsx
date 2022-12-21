@@ -12,6 +12,7 @@ const Auth: React.FC<any> = () => {
           <img src={"/images/audiophile.png"} alt="" />
        
           <div className={classes.auth_routes}>
+            {/* <h2>Text</h2> */}
           <Outlet  />
           </div>
        

@@ -10,7 +10,7 @@ import {
   // Button,
   FormHelperText,
 } from "@mui/material";
-import { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import classes from "./password-reset.module.scss";
@@ -19,6 +19,11 @@ import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
 import { useNavigate } from "react-router-dom";
 import Button from "../../../components/UI/Button";
 import CusForm from "../../../components/form/form";
+import { useDispatch, useSelector } from "react-redux";
+import { passwordReset } from "../../../services/api";
+import { IpasswordResetPayload } from "../../../models/types";
+import useHttp from "../../../hooks/useHttp";
+import Loader from "../../../components/loader/loader";
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 const passwordTest = new RegExp(
@@ -59,26 +64,33 @@ const passwordReducer = (state: any, action: any) => {
 };
 
 const PasswordReset: React.FC<any> = (props) => {
-
-    const navigate = useNavigate();
-
-
+  const navigate = useNavigate();
   const [formIsValid, setFormIsValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordMatch, setPasswordMatch] = useState(false);
+  const [passwordMatch, setPasswordMatch] = useState(true);
   const [formPageVisible, setFormPageVisible] = useState(true);
+
+  // const snackBarIsOpen = useSelector((state: any) => state.snackBar.isOpen);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  const { sendRequest } = useHttp();
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarMessage, setSnackBaeMessagee] = useState("");
 
   const [confirmPasswordState, setConfirmPasswordState] = useState("");
 
   const [emailState, disptachEmaiil] = useReducer(emailReducer, {
     value: "",
-    isValid: undefined,
+    isValid: false,
   });
 
   const [passwordState, disptachPassword] = useReducer(passwordReducer, {
     value: "",
-    isValid: undefined,
+    isValid: false,
   });
 
   const { isValid: emailIsValid } = emailState;
@@ -94,13 +106,37 @@ const PasswordReset: React.FC<any> = (props) => {
     };
   }, [emailIsValid, passwordIsValid, passwordMatch]);
 
-  const formSubmissionHandler = (event: any) => {
-    event.preventDefault();
-    setFormPageVisible(false)
-    console.log(formPageVisible)
+  useEffect(() => {}, [formPageVisible]);
 
-    
+  const formSubmissionHandler = async (event: any) => {
+    event.preventDefault();
+
+    const paswordResetPayload: IpasswordResetPayload = {
+      email: emailState.value,
+      password: passwordState.value,
+      confirmPassword: confirmPasswordState,
+    };
+
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(paswordResetPayload, passwordReset);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        setFormPageVisible(false);
+        console.log(formPageVisible);
+      }
+      console.log(apiResponse);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in login is ${error}`);
+    }
+
+    // console.log(formPageVisible);
   };
+
+  // const openSnackBarAction = (message: string) => {
+  //   dispatch(snackBarActions.open(message));
+  // };
 
   const emailChangeHandler = (event: any) => {
     if (event.target.value !== undefined) {
@@ -128,7 +164,6 @@ const PasswordReset: React.FC<any> = (props) => {
   };
 
   const confirmPasswordValidatorHandler = () => {
-    // disptachComfirmPasswordState({ type: "BLUR" });
     setPasswordMatch(confirmPasswordState === passwordState.value);
   };
 
@@ -151,245 +186,111 @@ const PasswordReset: React.FC<any> = (props) => {
   };
 
   const backToHomePageNavigation = () => {
-    navigate('/auth/login')
-  }
+    navigate("/auth/login");
+  };
 
   const renderedForms = [
     {
-      formControlStyle: classes.email ,
-      labelFor: "password_reset" ,
-      label : "Email",
-      placeholder : "Insert Email",
-      inputState : emailState,
+      formControlStyle: classes.email,
+      labelFor: "password_reset",
+      label: "Email",
+      placeholder: "Insert Email",
+      inputState: emailState,
       error: !emailState.isValid,
-      startAdornmentIcon :    <MailIcon stroke="green" />,
+      startAdornmentIcon: <MailIcon stroke="green" />,
       endAdornment: null,
-      inputChangeHandler : emailChangeHandler,
-      inputValidator : emailValidatorHandler,
-      errorMessage :"  Kindly enter a valid mail",
-      type : "text"
+      inputChangeHandler: emailChangeHandler,
+      inputValidator: emailValidatorHandler,
+      errorMessage: "  Kindly enter a valid mail",
+      type: "text",
     },
     {
-      formControlStyle: classes.password ,
-      labelFor: "password_reset-password" ,
-      label : "Password",
-      placeholder : "Enter Password",
-      inputState : passwordState,
+      formControlStyle: classes.password,
+      labelFor: "password_reset-password",
+      label: "Password",
+      placeholder: "Enter Password",
+      inputState: passwordState,
       error: !passwordState.isValid,
-      startAdornmentIcon :   <LockIcon />,
-      endAdornmentIcon:    showPassword ? <VisibilityOff /> : <Visibility />,
+      startAdornmentIcon: <LockIcon />,
+      endAdornmentIcon: showPassword ? <VisibilityOff /> : <Visibility />,
       endAdornmentIconClick: handleClickShowPassword,
       endAdornmentIconMouseDown: handleMouseDownPassword,
-      inputChangeHandler : passwordChangeHandler,
-      inputValidator : passwordValidatorHandler,
-      errorMessage :"  Invalid Password",
-      type : showPassword ? "text" : "password",
+      inputChangeHandler: passwordChangeHandler,
+      inputValidator: passwordValidatorHandler,
+      errorMessage: "  Invalid Password",
+      type: showPassword ? "text" : "password",
     },
     {
-      formControlStyle: classes.password ,
-      labelFor: "confirm password" ,
-      label : "Confirm Password",
-      placeholder : "Re-enter Password",
-      inputState : confirmPasswordState,
+      formControlStyle: classes.password,
+      labelFor: "confirm password",
+      label: "Confirm Password",
+      placeholder: "Re-enter Password",
+      inputState: confirmPasswordState,
       error: !passwordMatch,
-      startAdornmentIcon :   <LockIcon />,
-      endAdornmentIcon:    showConfirmPassword ? <VisibilityOff /> : <Visibility />,
+      startAdornmentIcon: <LockIcon />,
+      endAdornmentIcon: showConfirmPassword ? (
+        <VisibilityOff />
+      ) : (
+        <Visibility />
+      ),
       endAdornmentIconClick: handleClickShowConfirmPassword,
       endAdornmentIconMouseDown: handleMouseDownPassword,
-      inputChangeHandler : confirmPasswordChangeHandler,
-      inputValidator : confirmPasswordValidatorHandler,
-      errorMessage :"Passwords do not macth",
-      type : showConfirmPassword ? "text" : "password",
-    }
-  ]
-
+      inputChangeHandler: confirmPasswordChangeHandler,
+      inputValidator: confirmPasswordValidatorHandler,
+      errorMessage: "Passwords do not macth",
+      type: showConfirmPassword ? "text" : "password",
+    },
+  ];
 
   const mainPage = (
-    <div className={classes.formPage}>
-      <h1>Reset Password</h1>
-      <h4>Enter your email and new password</h4>
-      <form
-        onSubmit={formSubmissionHandler}
-        className={classes.password_reset_form}
-      >
-         {renderedForms.map((form: any) => (
-          <CusForm 
-          key = {form.label}
-          formControlStyle={form.formControlStyle} 
-          labelFor={form.labelFor}
-          label = {form.label}
-          placeholder = {form.placeholder}
-          inputState = {form.inputState}
-          startAdornmentIcon = {form.startAdornmentIcon && form.startAdornmentIcon}
-          endAdornmentIcon = {  form.endAdornmentIcon && form.endAdornmentIcon}
-          endAdornmentIconClick = {form.endAdornmentIconClick && form.endAdornmentIconClick}
-          endAdornmentIconMouseDown = {form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown}
-          inputChangeHandler = {form.inputChangeHandler}
-          inputValidator = {form.inputValidator}
-          errorMessage ={form.errorMessage}
-          type = {form.type}
-          error = {form.error}
-          />
-        ))}
-        {/* Email Form */}
-
-        {/* <FormControl
-          sx={{ m: 1, width: "100%" }}
-          variant="outlined"
-          className={`${classes.password_reset_formControl} ${classes.email}`}
+    <React.Fragment>
+      <div className={classes.formPage}>
+        <h1>Reset Password</h1>
+        <h4>Enter your email and new password</h4>
+        <form
+          onSubmit={formSubmissionHandler}
+          className={classes.password_reset_form}
         >
-          <InputLabel
-            htmlFor="password_reset-email"
-            className={classes.password_reset_input_label}
+          {renderedForms.map((form: any) => (
+            <CusForm
+              key={form.label}
+              formControlStyle={form.formControlStyle}
+              labelFor={form.labelFor}
+              label={form.label}
+              placeholder={form.placeholder}
+              inputState={form.inputState}
+              startAdornmentIcon={
+                form.startAdornmentIcon && form.startAdornmentIcon
+              }
+              endAdornmentIcon={form.endAdornmentIcon && form.endAdornmentIcon}
+              endAdornmentIconClick={
+                form.endAdornmentIconClick && form.endAdornmentIconClick
+              }
+              endAdornmentIconMouseDown={
+                form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown
+              }
+              inputChangeHandler={form.inputChangeHandler}
+              inputValidator={form.inputValidator}
+              errorMessage={form.errorMessage}
+              type={form.type}
+              error={form.error}
+            />
+          ))}
+
+          <Button
+            disabled={!formIsValid || isLoading}
+            type="submit"
+            design="orange"
+            style={classes.password_reset_button}
           >
-            Email
-          </InputLabel>
-          <OutlinedInput
-            className={classes.password_reset_input}
-            placeholder="Insert Email"
-            type="text"
-            error={!emailState.isValid}
-            value={emailState.value}
-            startAdornment={
-              <InputAdornment position="start">
-                <SvgIcon
-                  fontSize="small"
-                  stroke="red"
-                  className={classes.password_reset_input_icon}
-                >
-                  <MailIcon stroke="green" />
-                </SvgIcon>
-              </InputAdornment>
-            }
-            label="Email"
-            onChange={emailChangeHandler}
-            onBlur={emailValidatorHandler}
-          />
-          {!emailState.isValid && (
-            <FormHelperText error id="email-error">
-              Kindly enter a valid mail
-            </FormHelperText>
-          )}
-        </FormControl> */}
+            RESET
+          </Button>
+        </form>
 
-        {/* Password Form */}
-        {/* <FormControl
-          sx={{ m: 1, width: "100%" }}
-          variant="outlined"
-          className={`${classes.password_reset_formControl} ${classes.password}`}
-        >
-          <InputLabel
-            htmlFor="password_reset-password"
-            className={classes.password_reset_input_label}
-          >
-            Password
-          </InputLabel>
-          <OutlinedInput
-            className={classes.password_reset_input}
-            placeholder="Enter Password"
-            type={showPassword ? "text" : "password"}
-            error={!passwordState.isValid}
-            value={passwordState.value}
-            startAdornment={
-              <InputAdornment position="start">
-                <SvgIcon
-                  fontSize="small"
-                  className={classes.password_reset_input_icon}
-                >
-                  <LockIcon />
-                </SvgIcon>
-              </InputAdornment>
-            }
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                  className={classes.password_reset_input_iconButton}
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-            onChange={passwordChangeHandler}
-            onBlur={passwordValidatorHandler}
-          />
-          {!passwordState.isValid && (
-            <FormHelperText error id="passwordError">
-              Invalid Password
-            </FormHelperText>
-          )}
-        </FormControl> */}
+        {isLoading && <Loader style={classes.loader} design="orange" />}
+      </div>
 
-        {/* Confirm Pass */}
-        {/* <FormControl
-          sx={{ m: 1, width: "100%" }}
-          variant="outlined"
-          className={`${classes.password_reset_formControl} ${classes.password}`}
-        >
-          <InputLabel
-            htmlFor="confirm password"
-            className={classes.password_reset_input_label}
-          >
-            Confirm Password
-          </InputLabel>
-          <OutlinedInput
-            className={classes.password_reset_input}
-            placeholder="Re-enter Password"
-            type={showConfirmPassword ? "text" : "password"}
-            error={!passwordMatch}
-            value={confirmPasswordState}
-            startAdornment={
-              <InputAdornment position="start">
-                <SvgIcon
-                  fontSize="small"
-                  className={classes.password_reset_input_icon}
-                >
-                  <LockIcon />
-                </SvgIcon>
-              </InputAdornment>
-            }
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowConfirmPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                  className={classes.password_reset_input_iconButton}
-                >
-                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="confirm password"
-            onChange={confirmPasswordChangeHandler}
-            onBlur={confirmPasswordValidatorHandler}
-          />
-          {!passwordMatch && (
-            <FormHelperText error id="passwordError">
-              Passwords do not macth
-            </FormHelperText>
-          )}
-        </FormControl> */}
-    
-
-      <Button
-        disabled={!formIsValid}
-        type = "submit"
-        design = "orange"
-        style = {classes.password_reset_button}
-
-      >
-        RESET
-      </Button>
-      </form>
-
-     
-    </div>
+    </React.Fragment>
   );
 
   const successPage = (
@@ -401,7 +302,12 @@ const PasswordReset: React.FC<any> = (props) => {
         continue to the login screen
       </h4>
 
-      <Button variant="text" className={classes.password_reset_button} onClick = {backToHomePageNavigation}>
+      <Button
+        disabled={!formIsValid || isLoading}
+        design="orange"
+        style={classes.password_reset_button}
+        onClick={backToHomePageNavigation}
+      >
         CONTINUE
       </Button>
     </div>
