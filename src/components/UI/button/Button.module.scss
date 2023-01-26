@@ -10,6 +10,15 @@ Button.button {
        
     }
 
+    &.outline {
+        color: #D87D4A;
+        border: 1px solid #D87D4A;
+    }
+
+    &.grey {
+        background-color:  #F1F1F1;;
+    }
+
     &:disabled  {
         background-color: rgb(186, 186, 186);
         color: rgb(109, 109, 109);

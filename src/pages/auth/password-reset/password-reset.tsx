@@ -17,7 +17,7 @@ import classes from "./password-reset.module.scss";
 import { ReactComponent as MailIcon } from "../../../assets/images/Message.svg";
 import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
 import { useNavigate } from "react-router-dom";
-import Button from "../../../components/UI/Button";
+import Button from "../../../components/UI/button/Button";
 import CusForm from "../../../components/form/form";
 import { useDispatch, useSelector } from "react-redux";
 import { passwordReset } from "../../../services/api";

@@ -1,0 +1,137 @@
+.home_container {
+  overflow-x: hidden;
+  // height: calc(100vh - 100px);
+
+  * {
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 56px;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 30px;
+    line-height: 30px;
+
+    .products_h2_span {
+      display: block;
+      margin-top: 8px;
+      color: #d87d4a;
+    }
+  }
+
+  .newproduct_page {
+    width: 200vw;
+    height: calc(100vh - 100px);
+    display: flex;
+    position: relative;
+    transition: all 0.5s ease;
+    color: #fff;
+
+    &.secondPage {
+      transform: translateX(-100vw);
+    }
+
+    .page_content {
+      display: flex;
+      justify-content: center;
+      width: 100vw;
+    }
+
+    .image_container {
+      position: absolute;
+      display: flex;
+      top: 0;
+      left: 0%;
+      width: 200vw;
+      height: 100%;
+      z-index: 1;
+
+      .imageItem {
+        width: 50%;
+
+        &.page1 {
+          background-color: #000;
+        }
+
+        &.page2 {
+          background-color: #d87d4a;
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+    .item_description {
+      width: 40%;
+      height: auto;
+      margin-top: 10%;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      text-align: center;
+
+      p {
+        color: #fff;
+        &.new_product {
+          color: #ffffff81;
+          letter-spacing: 1em;
+        }
+      }
+    }
+  }
+
+  .radio_button_container {
+    width: 100vw;
+    top: 68%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease;
+    z-index: 2;
+
+    &.nextPage {
+      transform: translateX(100vw);
+    }
+  }
+
+  .products_view {
+    padding: 0 80px;
+
+    .products {
+      margin-block: 40px;
+    }
+
+    .swiper_btn {
+      margin-top: -60px;
+    }
+
+    .swiper_btn_container {
+      padding: 10px;
+    }
+
+ 
+
+    .swiper_body {
+    padding: 10px;
+
+    }
+  }
+}
+
+.cardContainer {
+  cursor: pointer;
+}
+
+
+
+
+

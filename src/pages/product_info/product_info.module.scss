@@ -1,0 +1,213 @@
+* {
+  box-sizing: border-box;
+  
+}
+
+
+
+h4 {
+  font-size: 16px;
+  font-family: "manropeRegular";
+
+  &.verified {
+    color: #717171;
+  }
+
+  &.newP {
+    color: #d87d4a;
+    letter-spacing: 10px;
+    font-family: "manropelight";
+    margin-bottom: 20px;
+  }
+}
+
+h2 {
+  font-size: 38px;
+  line-height: 45px;
+  font-family: "manropeBold";
+  margin-bottom: 40px;
+}
+
+h3 {
+  font-size: 28px;
+  line-height: 35px;
+  font-family: "manropeBold";
+  margin-block: 20px;
+
+  &.ratings {
+    margin-block: 10px;
+  }
+}
+
+p {
+  font-size: 12px;
+  line-height: 20px;
+  color: #717171;
+
+  &.ratings {
+    color: #000;
+    margin-block: 10px;
+  }
+
+  &.amount {
+    color: #d87d4a;
+    color: #a2a2a2;
+  }
+
+  &.commentBy {
+    font-size: 14px;
+  }
+}
+
+.product_detail_container {
+  padding: 0 80px;
+
+  .product_display {
+    width: 100%;
+    display: flex;
+    gap: 50px;
+    align-items: center;
+
+    .image_container {
+      width: 540px;
+      height: 560px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #97979729;
+
+      img {
+        width: 277px;
+      }
+    }
+
+    .new_product_heading {
+      height: 420px;
+      width: 450px;
+
+      .price_rating {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-block: 40px;
+
+        .rating {
+          display: flex;
+          gap: 12px;
+        }
+      }
+
+      .action {
+        display: flex;
+        gap: 20px;
+        .product_items_adjust {
+          height: 42px;
+          padding: 0 5px;
+          background-color: #97979729;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 120px;
+        }
+        .product_cart_button {
+          padding: 0 16px;
+        }
+      }
+    }
+  }
+
+  .features_contained {
+    display: grid;
+    column-gap: 8%;
+    grid-template-columns: 53% 40%;
+    margin-bottom: 30px;
+    padding: 0 80px;
+
+    .features {
+      .p1 {
+        margin-bottom: 20px;
+      }
+    }
+
+    .box_contents {
+      .content_values {
+        display: flex;
+        gap: 30px;
+      }
+    }
+  }
+
+  .reviews {
+    width: 100%;
+    padding: 20px;
+    background-color: #f9f9f9;
+    margin-block: 40px;
+    border-radius: 5px;
+    box-shadow: 0 0 4px rgb(0 0 0 / 14%);
+
+    hr {
+      border: 1px solid #bbbbbb90;
+    }
+
+    .reviews_body {
+      margin-block: 30px;
+      display: grid;
+      grid-template-columns: 16% 80%;
+      gap: 4%;
+
+      .ratings_box {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 20px;
+        background-color: #e7e7e7;
+        border-radius: 5px;
+      }
+
+      .reviews_breakdown {
+        margin-top: 20px;
+        .review_category {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 14% 12% 60%;
+          gap: 6%;
+          align-content: center;
+          justify-content: center;
+          justify-items: center;
+          align-items: center;
+          margin-block: 6px;
+
+          .ratings_rec {
+            width: 120px;
+            height: 8px;
+            border-radius: 4px;
+            background-color: #d9d9d9;
+            content: " ";
+
+            &.allocated {
+              background-color: #ffbf1b;
+            }
+          }
+        }
+      }
+
+      .reviews_comments {
+        
+        .comment_item {
+            padding: 10px 0;
+            border-bottom: 1px solid #a5a5a5;;
+
+            &.last_item {
+                border-bottom: none;
+            }
+            .stars {
+                margin-block: 16px;
+              }
+              
+        }
+      }
+    }
+  }
+}

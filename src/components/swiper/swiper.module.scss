@@ -1,0 +1,23 @@
+
+.swiper_buttons_container {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+
+  .swiper_btn {
+    padding: 0 0 15px 0;
+  }
+
+  .swiperBtn_icon {
+    height: 30px;
+    width: 30px;
+  }
+}
+
+.swiper {
+    width: 100%;
+    height: auto;
+
+  
+  }

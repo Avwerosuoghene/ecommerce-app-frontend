@@ -1,26 +1,18 @@
 import {
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  SvgIcon,
-  OutlinedInput,
-  IconButton,
+ 
   Checkbox,
   FormControlLabel,
-  // Button,
-  FormHelperText,
 } from "@mui/material";
 import React, { useEffect, useReducer, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
 
 import classes from "./login.module.scss";
 import { ReactComponent as MailIcon } from "../../../assets/images/Message.svg";
 import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
-import Button from "../../../components/UI/Button";
+import Button from "../../../components/UI/button/Button";
 import CusForm from "../../../components/form/form";
-import SnackBar from "../../../components/snackbar/snackbar";
 import Loader from "../../../components/loader/loader";
 import useHttp from "../../../hooks/useHttp";
 import { login } from "../../../services/api";
@@ -105,7 +97,7 @@ const Login: React.FC<any> = (props) => {
         const userId = apiResponse.data.id;
         const token = apiResponse.data.token
         dispatch(authActions.login({token, userId}));
-        navigate("/home");
+        navigate("/main/home");
       }
       console.log(apiResponse.isSuccess);
     } catch (error) {
@@ -153,9 +145,6 @@ const Login: React.FC<any> = (props) => {
   ) => {
     event.preventDefault();
   };
-  // const handleSnackBarClose = () => {
-  //   dispatch(snackBarActions.close());
-  // };
 
   const renderedForms = [
     {

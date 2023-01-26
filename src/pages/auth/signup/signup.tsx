@@ -20,7 +20,7 @@ import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
 import { ReactComponent as ProfileIcon } from "../../../assets/images/Profile.svg";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signUp } from "../../../services/api";
-import Button from "../../../components/UI/Button";
+import Button from "../../../components/UI/button/Button";
 import CusForm from "../../../components/form/form";
 import React from "react";
 import SnackBar from "../../../components/snackbar/snackbar";

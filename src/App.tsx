@@ -5,7 +5,6 @@ import { Fragment, useEffect } from "react";
 
 import Header from "./pages/header/header";
 import dotenv from "dotenv";
-import HeadPhones from "./pages/headphones/headphones";
 import EarPhones from "./pages/earphones/earphones";
 import Speakers from "./pages/speakers/speakers";
 import Auth from "./pages/auth/auth";

@@ -1,0 +1,9 @@
+.main_container {
+
+height: 100vh;
+overflow: hidden;
+    .main_routes {
+        height: calc(100vh - 100px);
+        overflow: auto;
+    }
+}

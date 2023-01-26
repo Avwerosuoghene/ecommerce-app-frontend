@@ -1,0 +1,32 @@
+* {
+    box-sizing: border-box;
+}
+
+.footer_container {
+    width: 100%;
+    padding: 40px 80px;
+    background-color: #101010;
+    color: #fff;
+
+    .top_elements {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+
+        .social_btn {
+            width: 34px;
+        }
+    }
+
+    .main_text {
+        width: 40vw;
+
+        p {
+            color: rgba(254, 254, 254, 0.5);
+            &.descrp1 {
+                margin-bottom: 40px;
+            }
+        }
+    }
+}

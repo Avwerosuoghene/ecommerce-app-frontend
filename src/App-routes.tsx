@@ -3,18 +3,18 @@ import Auth from "./pages/auth/auth";
 import PasswordReset from "./pages/auth/password-reset/password-reset";
 import Signup from "./pages/auth/signup/signup";
 import EarPhones from "./pages/earphones/earphones";
-import HeadPhones from "./pages/headphones/headphones";
 import Speakers from "./pages/speakers/speakers";
 import Login from "./pages/auth/login/login";
-import Home from "./pages/home/home";
+import Home from "./pages/main/home/home";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { authActions } from "./redux/store/auth";
+import ProductInfo from "./pages/product_info/product_info";
+import Main from "./pages/main/main";
 
 const AppRoutes = () => {
   const authState = useSelector((state: any) => state.auth);
 
-    
   return (
     <section>
       <Routes>
@@ -30,19 +30,27 @@ const AppRoutes = () => {
       </Routes>
       <Routes>
         <Route
+          path="/main"
+          element={
+            authState.isLoggedIn ? <Main /> : <Navigate replace to={"/"} />
+          }
+        >
+          <Route path="home" element={<Home />} />
+          <Route path="product-info" element={<ProductInfo />} />
+        </Route>
+      </Routes>
+      {/* <Routes>
+        <Route
           path="/home"
           element={
             authState.isLoggedIn ? <Home /> : <Navigate replace to={"/"} />
           }
         />
 
-        {/* {
-           !authState.isLoggedIn &&  <Navigate to="/auth" />
-        } */}
-      </Routes>
-      <Routes>
-        <Route path="/headphones" element={<HeadPhones />} />
-      </Routes>
+      </Routes> */}
+      {/* <Routes>
+     
+      </Routes> */}
       <Routes>
         <Route path="/earphones" element={<EarPhones />} />
       </Routes>
