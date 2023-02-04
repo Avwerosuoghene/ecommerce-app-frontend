@@ -2,6 +2,12 @@
   font-family: "manropeSemiBold";
 }
 
+// h3 {
+//   &.menu_text {
+//     margin: 0;
+//   }
+// }
+
 @keyframes showSearch {
   0% {
     display: block;
@@ -35,6 +41,10 @@
   padding: 0 80px;
   background-color: #fff;
   box-shadow: 1px 1px 5px #e5e3e3;
+
+
+
+  
 
   .nav_body {
     justify-content: space-between;
@@ -136,4 +146,39 @@
       }
     }
   }
+}
+
+.user_menu {
+  ul {
+    padding: 0;
+    li {
+
+      padding: 0;
+     
+
+      .menu_btn {
+        padding: 0;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 20% 80%;
+        justify-items: self-start;
+
+        h4 {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.menu_item {
+  // background-color: red;
+  // padding: 0;
+  // display: grid;
+  // grid-template-columns: 20% 80%;
+ 
+}
+
+.menu_icon {
+  width: 24px;
 }

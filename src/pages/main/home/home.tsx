@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { createSearchParams, NavLink, useNavigate } from "react-router-dom";
 
 import RadioButton from "../../../components/UI/radioButton/radio-button";
 import Header from "../../header/header";
@@ -55,7 +55,15 @@ const Home = () => {
   };
 
   const onCardClicked = () => {
-    navigate("../product-info");
+  
+    navigate(`../product-info/${1}`);
+    
+  //   navigate({
+  //     pathname: "../product-info/",
+  //     search: createSearchParams({
+  //         id: "1"
+  //     }).toString()
+  // });
     console.log('clicked')
   }
 

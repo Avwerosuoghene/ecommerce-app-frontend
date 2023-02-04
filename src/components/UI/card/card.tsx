@@ -71,7 +71,7 @@ const Card = (props: any) => {
         {stars.map((star) => (
             <StarIcon  key={star.marked }      sx={{ color: star.marked ? "#FFBF1B" : "#979797", fontSize: 20 }}/>
         ))}
-        <p className={classes.reviews}>({`${slideContent.ratings} verified Ratings`})</p>
+        <p className={classes.reviews}>({`${slideContent.ratings}  Ratings`})</p>
       </div>
       <Button
             type="button"

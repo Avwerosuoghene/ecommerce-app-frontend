@@ -17,7 +17,7 @@ h4 {
     color: #d87d4a;
     letter-spacing: 10px;
     font-family: "manropelight";
-    margin-bottom: 20px;
+
   }
 }
 
@@ -29,8 +29,8 @@ h2 {
 }
 
 h3 {
-  font-size: 28px;
-  line-height: 35px;
+  font-size: 20px;
+  line-height: 24px;
   font-family: "manropeBold";
   margin-block: 20px;
 
@@ -84,6 +84,20 @@ p {
     .new_product_heading {
       height: 420px;
       width: 450px;
+
+      .top_el {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+
+        .goBack_navlink {
+          font-size: 16px;
+          font-family: "manropeSemiBold";
+          text-decoration: none;
+          color: #000;
+        }
+      }
 
       .price_rating {
         display: flex;

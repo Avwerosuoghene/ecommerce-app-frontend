@@ -7,8 +7,8 @@ const snackBarSlice = createSlice({
     initialState: initialSnackBarState,
     reducers: {
         open(state, action: {payload: {message: string, severity: string}}) {
-            state.isOpen = true,
-            state.message = action.payload.message,
+            state.isOpen = true
+            state.message = action.payload.message
             state.severity = action.payload.severity
         },
         close(state: any) {

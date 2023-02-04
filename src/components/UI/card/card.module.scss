@@ -44,6 +44,7 @@ p {font-size: 12px;}
    display: grid;
    grid-template-columns: 1fr 1fr;
     padding: 10px 20px;
+    height: 120px;
 
     .price {
         justify-self: flex-end;

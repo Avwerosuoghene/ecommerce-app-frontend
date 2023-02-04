@@ -9,7 +9,7 @@ const CusForm = (props: any) => {
         <FormControl
         sx={{ m: 1, width: "100%" }}
         variant="outlined"
-        className={`${classes.formControl} ${classes[props.formControlStyle]}`}
+        className={`${classes.formControl} ${classes[props.formControlStyle]} ${props.customClass}`}
       >
         <InputLabel
           htmlFor={props.labelFor}
@@ -22,8 +22,11 @@ const CusForm = (props: any) => {
           placeholder={props.placeholder}
           type={props.type}
           error={props.error}
-          value={props.inputState.value}          
-          startAdornment=  {
+          inputProps={{ sx: { height: props.height } }}
+          value={props.inputState.value}  
+          
+          
+          startAdornment=  { props.startAdornmentIcon &&
             <InputAdornment position="start">
             <SvgIcon fontSize="small" className={classes._input_icon}>
             {props.startAdornmentIcon}

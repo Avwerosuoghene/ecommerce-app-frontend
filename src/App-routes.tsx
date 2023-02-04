@@ -11,6 +11,9 @@ import { useEffect } from "react";
 import { authActions } from "./redux/store/auth";
 import ProductInfo from "./pages/product_info/product_info";
 import Main from "./pages/main/main";
+import Checkout from "./pages/main/checkout/checkout";
+import ErrorPage from "./pages/main/404_page/error_page";
+import UserProfile from "./pages/main/user-profile/user-profile";
 
 const AppRoutes = () => {
   const authState = useSelector((state: any) => state.auth);
@@ -35,8 +38,13 @@ const AppRoutes = () => {
             authState.isLoggedIn ? <Main /> : <Navigate replace to={"/"} />
           }
         >
+           <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<Home />} />
-          <Route path="product-info" element={<ProductInfo />} />
+          <Route path="product-info/:id" element={<ProductInfo />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="profile" element={<UserProfile />} />
+          <Route path="*" element={<ErrorPage />} />
+        
         </Route>
       </Routes>
       {/* <Routes>
@@ -57,7 +65,11 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/speakers" element={<Speakers />} />
       </Routes>
-      <Routes>{/* <Route path="*" element={<Navigate to="/" />} /> */}</Routes>
+      <Routes>
+    {/* <Route path="*" element={<Navigate to="/main" />} /> */}\
+    {/* <Route path="/error" component={ErrorComponent} /> */}
+
+        </Routes>
     </section>
   );
 };
