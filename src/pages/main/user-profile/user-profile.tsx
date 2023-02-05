@@ -1,6 +1,6 @@
 import Button from "../../../components/UI/button/Button";
 import classes from "./user-profile.module.scss";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useRef } from "react";
 import CusForm from "../../../components/form/form";
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
@@ -92,6 +92,8 @@ const UserProfile = (props: any) => {
     isValid: false,
     touched: false,
   });
+  const [imageFile, setImageFile] : any = useState();
+  const imageInputRef : any = useRef();
 
   const { isValid: emailIsValid } = emailState;
   const { isValid: userNameIsValid } = userNameState;
@@ -101,6 +103,12 @@ const UserProfile = (props: any) => {
   const formSubmissionHandler = async (event: any) => {
     event.preventDefault();
   };
+
+  useEffect(() => {
+    console.log(imageFile)
+  }, [imageFile])
+
+  
 
   useEffect(() => {
     dispatchEmaiil({ type: "INPUT", value: "kesuion1@gmail.com" });
@@ -158,9 +166,28 @@ const UserProfile = (props: any) => {
     event.preventDefault();
   }
 
-  const onRemoveImage = () => {};
 
-  const onChangeImage = () => {};
+   const handleImageChange = (e: any) => {
+
+      setImageFile(URL.createObjectURL(e.target.files[0]));
+   
+  }
+
+  const onRemoveImage = () => {
+    setImageFile(null)
+  };
+
+  const clearFileInput = () => {
+    imageInputRef.current.value = null;
+  }
+
+  const onChangeImage = () => {
+    // const imageInput = document.getElementById("imageChangeInput");
+    imageInputRef.current.click();
+
+    
+
+};
 
   const profileUpdateForm = [
     {
@@ -177,20 +204,20 @@ const UserProfile = (props: any) => {
       errorMessage: " Kindly enter a valid name",
       type: "text",
     },
-    {
-      formControlStyle: classes.emailInput,
-      labelFor: "email",
-      label: "Email",
-      placeholder: "Insert Email",
-      inputState: userNameState,
-      error: !emailState.isValid && emailState.touched,
-      startAdornmentIcon: null,
-      endAdornment: null,
-      inputChangeHandler: userNameChangeHandler,
-      inputValidator: userNameValidatorHandler,
-      errorMessage: " Kindly enter a valid name",
-      type: "text",
-    },
+    // {
+    //   formControlStyle: classes.emailInput,
+    //   labelFor: "email",
+    //   label: "Email",
+    //   placeholder: "Insert Email",
+    //   inputState: userNameState,
+    //   error: !emailState.isValid && emailState.touched,
+    //   startAdornmentIcon: null,
+    //   endAdornment: null,
+    //   inputChangeHandler: userNameChangeHandler,
+    //   inputValidator: userNameValidatorHandler,
+    //   errorMessage: " Kindly enter a valid name",
+    //   type: "text",
+    // },
     {
       formControlStyle: classes.emailInput,
       labelFor: "email",
@@ -242,7 +269,10 @@ const UserProfile = (props: any) => {
 
         <div className={classes.img_form_container}>
           <div className={classes.image_area}>
-            <img src=" /images/sample_image.png" />
+            {!imageFile &&   <img  src=" /images/sample_image.png" />}
+            {imageFile &&   <img  src={imageFile} />}
+          
+
             <div className={classes.img_actions}>
               <Button
                 type="button"
@@ -252,6 +282,7 @@ const UserProfile = (props: any) => {
               >
                 CHANGE
               </Button>
+              <input type="file" onChange={handleImageChange}    style={{ display: "none" }} ref = {imageInputRef}   onClick={clearFileInput}  />
               <Button
                 type="button"
                 design="outline"
@@ -314,3 +345,5 @@ const UserProfile = (props: any) => {
 };
 
 export default UserProfile;
+
+

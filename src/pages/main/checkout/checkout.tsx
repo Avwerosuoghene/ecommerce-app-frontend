@@ -13,16 +13,14 @@ import Button from "../../../components/UI/button/Button";
 import useHttp from "../../../hooks/useHttp";
 import classes from "./checkout.module.scss";
 
-
-
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 
-const reducerFunction = (test: any, type: string, action: any, state: any) => {
+const reducerFunction = (test: any, action: any, state: any) => {
   if (action.type === "INPUT") {
+   
     return {
       value: action.value,
       isValid: test,
-
     };
   }
   if (action.type === "BLUR") {
@@ -31,141 +29,167 @@ const reducerFunction = (test: any, type: string, action: any, state: any) => {
   return { value: "", isValid: false };
 };
 
-const userNameReducer = (state: any, action: any) => {
+const defaultReducer = (state: any, action: any) => {
   let test;
   if (action.value) {
-    test = action.value.trim().length > 3;
+    switch (action.element) {
+      case "email":
+        test = emailTest.test(action.value.trim());
+        break;
+      case "phone":
+        if (action.value.length > 11) {
+          return {
+            value: state.value,
+            isValid: true,
+          };
+        }
+        action.value = action.value.replace(/\D/g, "");
+        test = action.value.trim().length === 11;
+        break;
+      case "zip code":
+        action.value = action.value.replace(/\D/g, "");
+        test = action.value.trim().length > 3;
+        break;
+      default:
+        test = action.value.trim().length > 3;
+        break;
+    }
   } else {
     test = null;
   }
-  return reducerFunction(test, "email", action, state);
-};
-
-const emailReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = emailTest.test(action.value.trim());
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
+  return reducerFunction(test, action, state);
 };
 
 
-const addressReducer = (state: any, action: any) => {
-  let test;
+// const userNameReducer = (state: any, action: any) => {
+//   let test;
+//   if (action.value) {
+//     test = action.value.trim().length > 3;
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
-  if (action.value) {
-    test = action.value.trim().length > 3;
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "address", action, state);
-};
+// const emailReducer = (state: any, action: any) => {
+//   let test;
+//   if (action.value) {
+//     test = emailTest.test(action.value.trim());
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
-const phoneReducer = (state: any, action: any) => {
-  let test;
+// const addressReducer = (state: any, action: any) => {
+//   let test;
 
- 
+//   if (action.value) {
+//     test = action.value.trim().length > 3;
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
-  if (action.value) {
-    if ( action.value.length > 11) {
-        return {
-          value: state.value,
-          isValid: true,
-        };
-      }
-      action.value = action.value.replace(/\D/g, "");
+// const phoneReducer = (state: any, action: any) => {
+//   let test;
 
-    test = action.value.trim().length === 11;
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "phone", action, state);
-};
+//   if (action.value) {
+//     if (action.value.length > 11) {
+//       return {
+//         value: state.value,
+//         isValid: true,
+//       };
+//     }
+//     action.value = action.value.replace(/\D/g, "");
 
+//     test = action.value.trim().length === 11;
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
-const zipCodeReducer = (state: any, action: any) => {
-  let test;
+// const zipCodeReducer = (state: any, action: any) => {
+//   let test;
 
-  if (action.value) {
-    action.value = action.value.replace(/\D/g, "");
-    test = action.value.trim().length > 3;
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "zipCode", action, state);
-};
+//   if (action.value) {
+//     action.value = action.value.replace(/\D/g, "");
+//     test = action.value.trim().length > 3;
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
-const cityReducer = (state: any, action: any) => {
-  let test;
+// const cityReducer = (state: any, action: any) => {
+//   let test;
 
-  if (action.value) {
-    test = action.value.trim().length > 3;
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "city", action, state);
-};
+//   if (action.value) {
+//     test = action.value.trim().length > 3;
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
-const countryReducer = (state: any, action: any) => {
-  let test;
+// const countryReducer = (state: any, action: any) => {
+//   let test;
 
-  if (action.value) {
-    test = action.value.trim().length > 3;
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "city", action, state);
-};
+//   if (action.value) {
+//     test = action.value.trim().length > 3;
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
 const Checkout = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [formIsValid, setFormIsValid] = useState(false);
-  const [emailState, dispatchEmaiil] = useReducer(emailReducer, {
+  const [emailState, dispatchEmail] = useReducer(defaultReducer, {
     value: "",
     isValid: false,
-    touched: false
+    touched: false,
   });
-  const [phoneState, dispatchPhone] = useReducer(phoneReducer, {
+  const [phoneState, dispatchPhone] = useReducer(defaultReducer, {
     value: "",
     isValid: false,
-    touched: false
+    touched: false,
   });
-  const [userNameState, dispatchUserName] = useReducer(userNameReducer, {
+  const [userNameState, dispatchUserName] = useReducer(defaultReducer, {
     value: "",
     isValid: false,
-    touched: false
-  });
-
-  const [addressState, dispatchAddress] = useReducer(addressReducer, {
-    value: "",
-    isValid: false,
-    touched: false
+    touched: false,
   });
 
-  const [zipState, dispatchZipCode] = useReducer(zipCodeReducer, {
+  const [addressState, dispatchAddress] = useReducer(defaultReducer, {
     value: "",
     isValid: false,
-    touched: false
+    touched: false,
   });
 
-  const [cityState, dispatchCity] = useReducer(cityReducer, {
+  const [zipState, dispatchZipCode] = useReducer(defaultReducer, {
     value: "",
     isValid: false,
-    touched: false
+    touched: false,
   });
 
-  const [countryState, dispatchCountry] = useReducer(countryReducer, {
+  const [cityState, dispatchCity] = useReducer(defaultReducer, {
+    value: "",
+    isValid: false,
+    touched: false,
+  });
+
+  const [countryState, dispatchCountry] = useReducer(defaultReducer, {
     value: "",
     isValid: true,
-    touched: false
+    touched: false,
   });
 
   const [open, setOpen] = useState(false);
-
- 
 
   //   const navigate = useNavigate();
 
@@ -186,6 +210,7 @@ const Checkout = () => {
     // };
   };
 
+
   useEffect(() => {
     const effectsSession = setTimeout(() => {
       setFormIsValid(
@@ -196,13 +221,21 @@ const Checkout = () => {
           cityIsValid &&
           countryIsValid
       );
-      console.log(formIsValid)
+      console.log(formIsValid);
     }, 500);
 
     return () => {
       clearTimeout(effectsSession);
     };
-  }, [emailIsValid, userNameIsValid, addressIsValid, zipIsValid,cityIsValid, countryIsValid ]);
+  }, [
+    emailIsValid,
+    userNameIsValid,
+    addressIsValid,
+    zipIsValid,
+    cityIsValid,
+    countryIsValid,
+  ]);
+  
 
   const checkoutHandler = () => {
     setOpen(true);
@@ -213,64 +246,70 @@ const Checkout = () => {
     navigate("/main/home");
   };
 
-  
+  const defaultValidatorHandler =(dispatch: any) => {
+    dispatch({ type: "BLUR", element: 'name' });
+  }
 
-  const userNameValidatorHandler = () => {
-    dispatchUserName({ type: "BLUR" });
-  };
+  // const userNameValidatorHandler = () => {
+  //   dispatchUserName({ type: "BLUR", element: 'name' });
+  // };
 
-  const emailValidatorHandler = () => {
-    dispatchEmaiil({ type: "BLUR" });
-  };
+  // const emailValidatorHandler = () => {
+  //   dispatchEmail({ type: "BLUR", element: 'email' });
+  // };
 
-  const phoneValidatorHandler = () => {
-    dispatchPhone({ type: "BLUR" });
-  };
+  // const phoneValidatorHandler = () => {
+  //   dispatchPhone({ type: "BLUR", element: 'phone' });
+  // };
 
-  const addressValidatorHandler = () => {
-    dispatchAddress({ type: "BLUR" });
-  };
+  // const addressValidatorHandler = () => {
+  //   dispatchAddress({ type: "BLUR", element: 'address' });
+  // };
 
-  const zipValidatorHandler = () => {
-    dispatchZipCode({ type: "BLUR" });
-  };
+  // const zipValidatorHandler = () => {
+  //   dispatchZipCode({ type: "BLUR", element: 'zip' });
+  // };
 
-  const cityValidatorHandler = () => {
-    dispatchCity({ type: "BLUR" });
-  };
+  // const cityValidatorHandler = () => {
+  //   dispatchCity({ type: "BLUR", element: 'city' });
+  // };
 
-  const countryValidatorHandler = () => {
-    dispatchCountry({ type: "BLUR" });
-  };
+  // const countryValidatorHandler = () => {
+  //   dispatchCountry({ type: "BLUR" });
+  // };
+
+  const defaultChangeHandler = (event: any, element: string, dispatchFunction: any) => {
+    dispatchFunction({ type: "INPUT", value: event.target.value , element: element});
+  }
 
   const userNameChangeHandler = (event: any) => {
-    dispatchUserName({ type: "INPUT", value: event.target.value });
+    dispatchUserName({ type: "INPUT", value: event.target.value , element: 'name'});
   };
 
   const emailChangeHandler = (event: any) => {
     if (event.target.value !== undefined) {
-      dispatchEmaiil({ type: "INPUT", value: event.target.value });
+      dispatchEmail({ type: "INPUT", value: event.target.value, element: "email" });
     }
   };
 
   const phoneChangeHandler = (event: any) => {
-    dispatchPhone({ type: "INPUT", value: event.target.value });
+    dispatchPhone({ type: "INPUT", value: event.target.value, element:'phone' });
   };
 
   const addressChangeHandler = (event: any) => {
-    dispatchAddress({ type: "INPUT", value: event.target.value });
+    dispatchAddress({ type: "INPUT", value: event.target.value, element:'address'});
   };
 
   const zipChangeHandler = (event: any) => {
-    dispatchZipCode({ type: "INPUT", value: event.target.value });
+    dispatchZipCode({ type: "INPUT", value: event.target.value , element: 'zip code' });
   };
 
   const cityChangeHandler = (event: any) => {
-    dispatchCity({ type: "INPUT", value: event.target.value });
+    dispatchCity({ type: "INPUT", value: event.target.value, element:'city' });
   };
 
   const countryChangeHandler = (event: any) => {
-    dispatchCountry({ type: "INPUT", value: event.target.value });
+    dispatchCountry({ type: "INPUT", value: event.target.value, element:'country' });
   };
 
   const paymentMethodHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -315,11 +354,12 @@ const Checkout = () => {
       label: "Full Name",
       placeholder: "Insert Full Name",
       inputState: userNameState,
+      dispatchName: dispatchUserName,
       error: !userNameState.isValid && userNameState.touched,
       startAdornmentIcon: null,
       endAdornment: null,
       inputChangeHandler: userNameChangeHandler,
-      inputValidator: userNameValidatorHandler,
+      // inputValidator: userNameValidatorHandler,
       errorMessage: " Kindly enter a valid name",
       type: "text",
     },
@@ -333,7 +373,8 @@ const Checkout = () => {
       startAdornmentIcon: null,
       endAdornment: null,
       inputChangeHandler: emailChangeHandler,
-      inputValidator: emailValidatorHandler,
+      // inputValidator: emailValidatorHandler,
+      dispatchName: dispatchEmail,
       errorMessage: "Kindly enter a valid mail",
       type: "text",
     },
@@ -347,7 +388,8 @@ const Checkout = () => {
       startAdornmentIcon: null,
       endAdornment: null,
       inputChangeHandler: phoneChangeHandler,
-      inputValidator: phoneValidatorHandler,
+      // inputValidator: phoneValidatorHandler,
+      dispatchName: dispatchPhone,
       errorMessage: "Kindly enter a valid phone",
       type: "text",
     },
@@ -364,7 +406,8 @@ const Checkout = () => {
       startAdornmentIcon: null,
       endAdornment: null,
       inputChangeHandler: addressChangeHandler,
-      inputValidator: addressValidatorHandler,
+      // inputValidator: addressValidatorHandler,
+      dispatchName: dispatchAddress,
       errorMessage: " Kindly enter a valid address",
       type: "text",
     },
@@ -378,7 +421,8 @@ const Checkout = () => {
       startAdornmentIcon: null,
       endAdornment: null,
       inputChangeHandler: zipChangeHandler,
-      inputValidator: zipValidatorHandler,
+      // inputValidator: zipValidatorHandler,
+      dispatchName: dispatchZipCode,
       errorMessage: "Kindly enter a zip code",
       type: "text",
     },
@@ -392,7 +436,8 @@ const Checkout = () => {
       startAdornmentIcon: null,
       endAdornment: null,
       inputChangeHandler: cityChangeHandler,
-      inputValidator: cityValidatorHandler,
+      // inputValidator: cityValidatorHandler,
+      dispatchName: dispatchCity,
       errorMessage: "Kindly enter a valid city",
       type: "text",
     },
@@ -406,7 +451,8 @@ const Checkout = () => {
       startAdornmentIcon: null,
       endAdornment: null,
       inputChangeHandler: countryChangeHandler,
-      inputValidator: countryValidatorHandler,
+      // inputValidator: countryValidatorHandler,
+      dispatchName: dispatchCountry,
       errorMessage: "Kindly enter a valid country",
       type: "text",
     },
@@ -434,7 +480,10 @@ const Checkout = () => {
   return (
     <Fragment>
       <section className={classes.checkout_container}>
-        <NavLink to={`../product-info/${1}`} className={classes.checkout_navlink}>
+        <NavLink
+          to={`../product-info/${1}`}
+          className={classes.checkout_navlink}
+        >
           Go Back
         </NavLink>
         <div className={classes.checkout_detail_container}>
@@ -465,8 +514,16 @@ const Checkout = () => {
                       form.endAdornmentIconMouseDown &&
                       form.endAdornmentIconMouseDown
                     }
-                    inputChangeHandler={form.inputChangeHandler}
-                    inputValidator={form.inputValidator}
+                    // inputChangeHandler={form.inputChangeHandler}
+                    inputChangeHandler = {
+                      (event: any) => {
+                        defaultChangeHandler(event, form.labelFor, form.dispatchName)
+                      }
+                    }
+                    // inputValidator={form.inputValidator}
+                    inputValidator={() => {
+                      defaultValidatorHandler(form.dispatchName);
+                    }}
                     errorMessage={form.errorMessage}
                     type={form.type}
                     error={form.error}
@@ -503,8 +560,16 @@ const Checkout = () => {
                       form.endAdornmentIconMouseDown &&
                       form.endAdornmentIconMouseDown
                     }
-                    inputChangeHandler={form.inputChangeHandler}
-                    inputValidator={form.inputValidator}
+                    // inputChangeHandler={form.inputChangeHandler}
+                    inputChangeHandler = {
+                      (event: any) => {
+                        defaultChangeHandler(event, form.labelFor, form.dispatchName)
+                      }
+                    }
+                    // inputValidator={form.inputValidator}
+                    inputValidator={() => {
+                      defaultValidatorHandler(form.dispatchName);
+                    }}
                     errorMessage={form.errorMessage}
                     type={form.type}
                     error={form.error}
@@ -585,7 +650,7 @@ const Checkout = () => {
 
             <div className={classes.lower_elements}>
               {amountValues.map((value) => (
-                <div className={classes.sum} key = {value.name}>
+                <div className={classes.sum} key={value.name}>
                   <strong className={classes.amount}>{value.name}</strong>
                   <strong>$ {value.value}</strong>
                 </div>
@@ -596,7 +661,7 @@ const Checkout = () => {
                   type="button"
                   design="orange"
                   onClick={checkoutHandler}
-                //   disabled = {!formIsValid}
+                  //   disabled = {!formIsValid}
                   style={classes.dialog_checkout_button}
                 >
                   CONTINUE

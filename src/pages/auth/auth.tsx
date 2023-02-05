@@ -10,12 +10,11 @@ const Auth: React.FC<any> = () => {
         <div className={classes.auth_noContent}></div>
         <div className={classes.auth_Content}>
           <img src={"/images/audiophile.png"} alt="" />
-       
+
           <div className={classes.auth_routes}>
             {/* <h2>Text</h2> */}
-          <Outlet  />
+            <Outlet />
           </div>
-       
         </div>
       </section>
     </Fragment>

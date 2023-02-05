@@ -38,38 +38,28 @@ const AppRoutes = () => {
             authState.isLoggedIn ? <Main /> : <Navigate replace to={"/"} />
           }
         >
-           <Route path="" element={<Navigate to="home" />} />
+          <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<Home />} />
           <Route path="product-info/:id" element={<ProductInfo />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="profile" element={<UserProfile />} />
-          <Route path="*" element={<ErrorPage />} />
-        
+       
         </Route>
       </Routes>
-      {/* <Routes>
-        <Route
-          path="/home"
-          element={
-            authState.isLoggedIn ? <Home /> : <Navigate replace to={"/"} />
-          }
-        />
 
-      </Routes> */}
       {/* <Routes>
-     
-      </Routes> */}
-      <Routes>
         <Route path="/earphones" element={<EarPhones />} />
       </Routes>
       <Routes>
         <Route path="/speakers" element={<Speakers />} />
       </Routes>
       <Routes>
-    {/* <Route path="*" element={<Navigate to="/main" />} /> */}\
-    {/* <Route path="/error" component={ErrorComponent} /> */}
 
-        </Routes>
+      </Routes> */}
+       <Routes>
+       <Route path="*" element={<ErrorPage />} />
+       </Routes>
+   
     </section>
   );
 };
