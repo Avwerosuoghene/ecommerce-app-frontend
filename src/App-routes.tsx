@@ -14,6 +14,7 @@ import Main from "./pages/main/main";
 import Checkout from "./pages/main/checkout/checkout";
 import ErrorPage from "./pages/main/404_page/error_page";
 import UserProfile from "./pages/main/user-profile/user-profile";
+import Admin from "./pages/admin/admin";
 
 const AppRoutes = () => {
   const authState = useSelector((state: any) => state.auth);
@@ -29,6 +30,7 @@ const AppRoutes = () => {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="password-reset" element={<PasswordReset />} />
+          <Route path="*" element={<ErrorPage />} />
         </Route>
       </Routes>
       <Routes>
@@ -43,8 +45,11 @@ const AppRoutes = () => {
           <Route path="product-info/:id" element={<ProductInfo />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="profile" element={<UserProfile />} />
-       
+          <Route path="*" element={<ErrorPage />} />
         </Route>
+      </Routes>
+      <Routes>
+        <Route path="/admin" element={<Admin />}></Route>
       </Routes>
 
       {/* <Routes>
@@ -56,10 +61,9 @@ const AppRoutes = () => {
       <Routes>
 
       </Routes> */}
-       <Routes>
-       <Route path="*" element={<ErrorPage />} />
-       </Routes>
-   
+      <Routes>
+      
+      </Routes>
     </section>
   );
 };

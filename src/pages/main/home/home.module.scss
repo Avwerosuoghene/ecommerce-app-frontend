@@ -8,7 +8,7 @@
 
   h1 {
     font-size: 56px;
-    margin: 0;
+    // margin: 0;
   }
 
   h2 {
@@ -83,6 +83,7 @@
         &.new_product {
           color: #ffffff81;
           letter-spacing: 1em;
+          margin-bottom: 20px;
         }
       }
     }
