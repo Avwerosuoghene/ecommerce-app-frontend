@@ -15,6 +15,8 @@ import Checkout from "./pages/main/checkout/checkout";
 import ErrorPage from "./pages/main/404_page/error_page";
 import UserProfile from "./pages/main/user-profile/user-profile";
 import Admin from "./pages/admin/admin";
+import AdminHome from "./pages/admin/admin-home/admin-home";
+import AdminUpload from "./pages/admin/admin-upload/admin-upload";
 
 const AppRoutes = () => {
   const authState = useSelector((state: any) => state.auth);
@@ -49,7 +51,11 @@ const AppRoutes = () => {
         </Route>
       </Routes>
       <Routes>
-        <Route path="/admin" element={<Admin />}></Route>
+        <Route path="/admin" element={<Admin />}>
+          <Route path="" element={<Navigate to="home" />} />
+          <Route path="home" element={<AdminHome />} />
+          <Route path="upload" element={<AdminUpload />} />
+        </Route>
       </Routes>
 
       {/* <Routes>
@@ -61,9 +67,7 @@ const AppRoutes = () => {
       <Routes>
 
       </Routes> */}
-      <Routes>
-      
-      </Routes>
+      <Routes></Routes>
     </section>
   );
 };

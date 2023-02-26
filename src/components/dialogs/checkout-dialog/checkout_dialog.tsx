@@ -5,8 +5,9 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 import classes from "./checkout_dialog.module.scss";
-import Button from "../../UI/button/Button";
+import UIButton from "../../UI/button/Button";
 import { useNavigate } from "react-router-dom";
+import Button from "../../UI/button/Button";
 
 const CheckoutDialog = (props: any) => {
 

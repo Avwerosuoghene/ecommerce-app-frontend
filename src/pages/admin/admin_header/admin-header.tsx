@@ -1,5 +1,5 @@
-import { ReactComponent as SearchIcon } from "../../assets/images/Search.svg";
-import { ReactComponent as BellIcon } from "../../assets/images/Notification.svg";
+import { ReactComponent as SearchIcon } from "../../../assets/images/Search.svg";
+import { ReactComponent as BellIcon } from "../../../assets/images/Notification.svg";
 import classes from "./admin-header.module.scss";
 import { IconButton } from "@mui/material";
 
@@ -25,7 +25,7 @@ const AdminHeader = () => {
         </div>
         <IconButton  disableRipple>
             <div className={classes.nav_profile_img}>
-              <img src="/images/dp_placeholder.png" alt="" />
+              <img src="/images/default_admin_upload.png" alt="" />
             </div>
           </IconButton>
           <p>Warren Buffet</p>

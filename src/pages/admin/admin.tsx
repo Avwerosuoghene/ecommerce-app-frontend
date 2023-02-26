@@ -1,5 +1,6 @@
-import AdminHeader from "../admin_header/admin-header";
-import AdminSideBar from "../admin_sidebar/admin-sidebar";
+import { Outlet } from "react-router-dom";
+import AdminHeader from "./admin_header/admin-header";
+import AdminSideBar from "./admin_sidebar/admin-sidebar";
 import classes from './admin.module.scss';
 
 const Admin = () => {
@@ -9,6 +10,7 @@ const Admin = () => {
             <AdminSideBar/>
             <section className={classes.main_content}>
                 <AdminHeader/>
+                <Outlet  />
             </section>
         </section>
     )

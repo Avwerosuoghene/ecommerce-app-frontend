@@ -10,6 +10,7 @@ const CusForm = (props: any) => {
         sx={{ m: 1, width: "100%" }}
         variant="outlined"
         className={`${classes.formControl} ${classes[props.formControlStyle]} ${props.customClass}`}
+        style={props.rawStyle}
       >
         <InputLabel
           htmlFor={props.labelFor}
