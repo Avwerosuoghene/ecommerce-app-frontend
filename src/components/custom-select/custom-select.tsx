@@ -11,7 +11,7 @@ const CustomSelect = (props: {
 }) => {
   return (
     <FormControl
-      sx={{ m: 1, width: "100%" }}
+      sx={{ m: 1, width: "100%" , textAlign: 'start'}}
       variant="outlined"
       className={`${classes.formControl} ${props.style}`}
      

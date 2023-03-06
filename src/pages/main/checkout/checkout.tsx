@@ -9,25 +9,26 @@ import { Fragment, useEffect, useReducer, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import SuccessDialog from "../../../components/dialogs/success-dialog/success_dialog";
 import CusForm from "../../../components/form/form";
+import { HelperComponent } from "../../../components/helper/helper.component";
 import Button from "../../../components/UI/button/Button";
 import useHttp from "../../../hooks/useHttp";
 import classes from "./checkout.module.scss";
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 
-const reducerFunction = (test: any, action: any, state: any) => {
-  if (action.type === "INPUT") {
+// const reducerFunction = (test: any, action: any, state: any) => {
+//   if (action.type === "INPUT") {
    
-    return {
-      value: action.value,
-      isValid: test,
-    };
-  }
-  if (action.type === "BLUR") {
-    return { value: state.value, isValid: state.isValid, touched: true };
-  }
-  return { value: "", isValid: false };
-};
+//     return {
+//       value: action.value,
+//       isValid: test,
+//     };
+//   }
+//   if (action.type === "BLUR") {
+//     return { value: state.value, isValid: state.isValid, touched: true };
+//   }
+//   return { value: "", isValid: false };
+// };
 
 const defaultReducer = (state: any, action: any) => {
   let test;
@@ -57,49 +58,51 @@ const defaultReducer = (state: any, action: any) => {
   } else {
     test = null;
   }
-  return reducerFunction(test, action, state);
+  // return HelperComponent.reducerFunction(test, action, state);
 };
 
 
-const Checkout = () => {
+const Checkout: React.FC<any>  = () => {
   const [isLoading, setIsLoading] = useState(false);
 
+    const helperComponent = new HelperComponent();
+
   const [formIsValid, setFormIsValid] = useState(false);
-  const [emailState, dispatchEmail] = useReducer(defaultReducer, {
+  const [emailState, dispatchEmail] = useReducer(helperComponent.defaultReducer, {
     value: "",
     isValid: false,
     touched: false,
   });
-  const [phoneState, dispatchPhone] = useReducer(defaultReducer, {
+  const [phoneState, dispatchPhone] = useReducer(helperComponent.defaultReducer, {
     value: "",
     isValid: false,
     touched: false,
   });
-  const [userNameState, dispatchUserName] = useReducer(defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
-
-  const [addressState, dispatchAddress] = useReducer(defaultReducer, {
+  const [userNameState, dispatchUserName] = useReducer(helperComponent.defaultReducer, {
     value: "",
     isValid: false,
     touched: false,
   });
 
-  const [zipState, dispatchZipCode] = useReducer(defaultReducer, {
+  const [addressState, dispatchAddress] = useReducer(helperComponent.defaultReducer, {
     value: "",
     isValid: false,
     touched: false,
   });
 
-  const [cityState, dispatchCity] = useReducer(defaultReducer, {
+  const [zipState, dispatchZipCode] = useReducer(helperComponent.defaultReducer, {
     value: "",
     isValid: false,
     touched: false,
   });
 
-  const [countryState, dispatchCountry] = useReducer(defaultReducer, {
+  const [cityState, dispatchCity] = useReducer(helperComponent.defaultReducer, {
+    value: "",
+    isValid: false,
+    touched: false,
+  });
+
+  const [countryState, dispatchCountry] = useReducer(helperComponent.defaultReducer, {
     value: "",
     isValid: true,
     touched: false,
@@ -200,6 +203,7 @@ const Checkout = () => {
       idx: 3,
     },
   ];
+  
 
   const billingInfoForms = [
     {

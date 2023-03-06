@@ -27,6 +27,7 @@ import SnackBar from "../../../components/snackbar/snackbar";
 import { snackBarActions } from "../../../redux/store/snackbar";
 import useHttp from "../../../hooks/useHttp";
 import Loader from "../../../components/loader/loader";
+import CustomSelect from "../../../components/custom-select/custom-select";
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 const passwordTest = new RegExp(
@@ -40,7 +41,7 @@ const reducerFunction = (test: any, type: string, action: any, state: any) => {
     };
   }
   if (action.type === "BLUR") {
-    return { value: state.value, isValid: state.isValid };
+    return { value: state.value, isValid: state.isValid ,  isTouched: true};
   }
   return { value: "", isValid: false };
 };
@@ -83,21 +84,27 @@ const Signup: React.FC<any> = (props) => {
   const [showPassword, setShowPassword] = useState(false);
   const { sendRequest } = useHttp();
   const dispatch = useDispatch();
+  const [userType, setUserType] = useState('Buyer');
+
+  const userTypes = ['Seller', 'Buyer']
   // const snackBarIsOpen = useSelector((state: any) => state.snackBar.isOpen);
 
   const [emailState, disptachEmaiil] = useReducer(emailReducer, {
     value: " ",
-    isValid: true,
+    isValid: false,
+    isTouched: false
   });
 
   const [passwordState, disptachPassword] = useReducer(passwordReducer, {
     value: "",
-    isValid: true,
+    isValid: false,
+    isTouched: false
   });
 
   const [userNameState, disptachUserName] = useReducer(userNameReducer, {
     value: "",
-    isValid: true,
+    isValid: false,
+    isTouched: false
   });
 
   const [termsnConditionsIsValidState, setTermsnConditionsIsValidState] =
@@ -191,6 +198,10 @@ const Signup: React.FC<any> = (props) => {
     });
   };
 
+  const userTypeChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setUserType(event.target.value);
+  }
+
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
@@ -208,7 +219,7 @@ const Signup: React.FC<any> = (props) => {
       label: "Full Name",
       placeholder: "Insert Full Name",
       inputState: userNameState,
-      error: !userNameState.isValid,
+      error: !userNameState.isValid && userNameState.isTouched,
       startAdornmentIcon: <ProfileIcon stroke="green" />,
       endAdornment: null,
       inputChangeHandler: userNameChangeHandler,
@@ -222,7 +233,7 @@ const Signup: React.FC<any> = (props) => {
       label: "Email",
       placeholder: "Insert Email",
       inputState: emailState,
-      error: !emailState.isValid,
+      error: !emailState.isValid && emailState.isTouched,
       startAdornmentIcon: <MailIcon stroke="green" />,
       endAdornment: null,
       inputChangeHandler: emailChangeHandler,
@@ -236,7 +247,7 @@ const Signup: React.FC<any> = (props) => {
       label: "Password",
       placeholder: "Enter Password",
       inputState: passwordState,
-      error: !passwordState.isValid,
+      error: !passwordState.isValid && passwordState.isTouched,
       startAdornmentIcon: <LockIcon />,
       endAdornmentIcon: showPassword ? <VisibilityOff /> : <Visibility />,
       endAdornmentIconClick: handleClickShowPassword,
@@ -285,6 +296,15 @@ const Signup: React.FC<any> = (props) => {
               error={form.error}
             />
           ))}
+
+          <CustomSelect
+            value={userType}
+            label="User Type"
+            menuItems={userTypes}
+            handleChange={userTypeChangeHandler}
+            style={classes.select_style}
+            rawStyle={{ borderRadius: "4px 0 0 4px" }}
+          />
 
           <div className={classes.loggedIn}>
             <FormControlLabel

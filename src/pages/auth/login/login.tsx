@@ -28,7 +28,7 @@ const reducerFunction = (test: any, type: string, action: any, state: any) => {
     };
   }
   if (action.type === "BLUR") {
-    return { value: state.value, isValid: state.isValid };
+    return {  value: state.value, isValid: state.isValid, touched: true  };
   }
   return { value: "", isValid: false };
 };
@@ -66,11 +66,13 @@ const Login: React.FC<any> = (props) => {
   const [emailState, disptachEmaiil] = useReducer(emailReducer, {
     value: "",
     isValid: false,
+    touched: false,
   });
 
   const [passwordState, disptachPassword] = useReducer(passwordReducer, {
     value: "",
     isValid: false,
+    touched: false,
   });
 
   const { isValid: emailIsValid } = emailState;
@@ -153,7 +155,7 @@ const Login: React.FC<any> = (props) => {
       label: "Email",
       placeholder: "Insert Email",
       inputState: emailState,
-      error: !emailState.isValid,
+      error: !emailState.isValid ,
       startAdornmentIcon: <MailIcon stroke="green" />,
       endAdornment: null,
       inputChangeHandler: emailChangeHandler,
