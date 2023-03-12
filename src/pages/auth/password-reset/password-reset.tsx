@@ -24,44 +24,7 @@ import { passwordReset } from "../../../services/api";
 import { IpasswordResetPayload } from "../../../models/types";
 import useHttp from "../../../hooks/useHttp";
 import Loader from "../../../components/loader/loader";
-
-const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-const passwordTest = new RegExp(
-  /^(?=.*\d{1,})(?=.*[A-Z]{1,})[\w\d[\]{};:=<>_+^#$@!%*?&\.]{6,}$/
-);
-
-const reducerFunction = (test: any, type: string, action: any, state: any) => {
-  if (action.type === "INPUT") {
-    return {
-      value: action.value,
-      isValid: test,
-    };
-  }
-  if (action.type === "BLUR") {
-    return { value: state.value, isValid: state.isValid };
-  }
-  return { value: "", isValid: false };
-};
-
-const emailReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = emailTest.test(action.value.trim());
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
-};
-
-const passwordReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = passwordTest.test(action.value.trim());
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
-};
+import { HelperComponent } from "../../../components/helper/helper.component";
 
 const PasswordReset: React.FC<any> = (props) => {
   const navigate = useNavigate();
@@ -71,27 +34,22 @@ const PasswordReset: React.FC<any> = (props) => {
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [formPageVisible, setFormPageVisible] = useState(true);
 
-  // const snackBarIsOpen = useSelector((state: any) => state.snackBar.isOpen);
-
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
 
+  const helperComponent = new HelperComponent();
   const { sendRequest } = useHttp();
-
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackBarMessage, setSnackBaeMessagee] = useState("");
 
   const [confirmPasswordState, setConfirmPasswordState] = useState("");
 
-  const [emailState, disptachEmaiil] = useReducer(emailReducer, {
-    value: "",
-    isValid: false,
-  });
+  const [emailState, disptachEmail] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
-  const [passwordState, disptachPassword] = useReducer(passwordReducer, {
-    value: "",
-    isValid: false,
-  });
+  const [passwordState, disptachPassword] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
   const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
@@ -130,37 +88,27 @@ const PasswordReset: React.FC<any> = (props) => {
       setIsLoading(false);
       console.log(`error in login is ${error}`);
     }
-
-    // console.log(formPageVisible);
   };
 
-  // const openSnackBarAction = (message: string) => {
-  //   dispatch(snackBarActions.open(message));
-  // };
-
-  const emailChangeHandler = (event: any) => {
-    if (event.target.value !== undefined) {
-      disptachEmaiil({ type: "INPUT", value: event.target.value });
-    }
+  const defaultValidatorHandler = (dispatch: any, element: string) => {
+    dispatch({ type: "BLUR", element: element });
   };
 
-  const passwordChangeHandler = (event: any) => {
-    setPasswordMatch(event.target.value === confirmPasswordState);
-    disptachPassword({ type: "INPUT", value: event.target.value });
+  const defaultChangeHandler = (
+    event: any,
+    element: string,
+    dispatchFunction: any
+  ) => {
+    dispatchFunction({
+      type: "INPUT",
+      value: event.target.value,
+      element: element,
+    });
   };
 
   const confirmPasswordChangeHandler = (event: any) => {
     setPasswordMatch(event.target.value === passwordState.value);
     setConfirmPasswordState(event.target.value);
-  };
-
-  const emailValidatorHandler = () => {
-    disptachEmaiil({ type: "BLUR" });
-  };
-
-  const passwordValidatorHandler = () => {
-    disptachPassword({ type: "BLUR" });
-    confirmPasswordValidatorHandler();
   };
 
   const confirmPasswordValidatorHandler = () => {
@@ -192,55 +140,51 @@ const PasswordReset: React.FC<any> = (props) => {
   const renderedForms = [
     {
       formControlStyle: classes.email,
-      labelFor: "password_reset",
+      labelFor: "email",
       label: "Email",
-      placeholder: "Insert Email",
+      placeholder: "Enter Email",
       inputState: emailState,
-      error: !emailState.isValid,
+      dispatchName: disptachEmail,
+      error: !emailState.isValid && emailState.touched,
       startAdornmentIcon: <MailIcon stroke="green" />,
       endAdornment: null,
-      inputChangeHandler: emailChangeHandler,
-      inputValidator: emailValidatorHandler,
       errorMessage: "  Kindly enter a valid mail",
       type: "text",
     },
     {
       formControlStyle: classes.password,
-      labelFor: "password_reset-password",
+      labelFor: "sup_password",
       label: "Password",
       placeholder: "Enter Password",
       inputState: passwordState,
-      error: !passwordState.isValid,
+      error: !passwordState.isValid && passwordState.touched,
+      dispatchName: disptachPassword,
       startAdornmentIcon: <LockIcon />,
       endAdornmentIcon: showPassword ? <VisibilityOff /> : <Visibility />,
       endAdornmentIconClick: handleClickShowPassword,
       endAdornmentIconMouseDown: handleMouseDownPassword,
-      inputChangeHandler: passwordChangeHandler,
-      inputValidator: passwordValidatorHandler,
-      errorMessage: "  Invalid Password",
+      errorMessage:
+        "  Password must contain atleast one number, one upper case character and be atleast 6 characters long",
       type: showPassword ? "text" : "password",
     },
-    {
-      formControlStyle: classes.password,
-      labelFor: "confirm password",
-      label: "Confirm Password",
-      placeholder: "Re-enter Password",
-      inputState: confirmPasswordState,
-      error: !passwordMatch,
-      startAdornmentIcon: <LockIcon />,
-      endAdornmentIcon: showConfirmPassword ? (
-        <VisibilityOff />
-      ) : (
-        <Visibility />
-      ),
-      endAdornmentIconClick: handleClickShowConfirmPassword,
-      endAdornmentIconMouseDown: handleMouseDownPassword,
-      inputChangeHandler: confirmPasswordChangeHandler,
-      inputValidator: confirmPasswordValidatorHandler,
-      errorMessage: "Passwords do not macth",
-      type: showConfirmPassword ? "text" : "password",
-    },
   ];
+
+  const confirmPassword = {
+    formControlStyle: classes.password,
+    labelFor: "confirm password",
+    label: "Confirm Password",
+    placeholder: "Re-enter Password",
+    inputState: confirmPasswordState,
+    error: !passwordMatch,
+    startAdornmentIcon: <LockIcon />,
+    endAdornmentIcon: showConfirmPassword ? <VisibilityOff /> : <Visibility />,
+    endAdornmentIconClick: handleClickShowConfirmPassword,
+    endAdornmentIconMouseDown: handleMouseDownPassword,
+    inputChangeHandler: confirmPasswordChangeHandler,
+    inputValidator: confirmPasswordValidatorHandler,
+    errorMessage: "Passwords do not macth",
+    type: showConfirmPassword ? "text" : "password",
+  };
 
   const mainPage = (
     <React.Fragment>
@@ -269,13 +213,45 @@ const PasswordReset: React.FC<any> = (props) => {
               endAdornmentIconMouseDown={
                 form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown
               }
-              inputChangeHandler={form.inputChangeHandler}
-              inputValidator={form.inputValidator}
+              inputChangeHandler={(event: any) => {
+                defaultChangeHandler(event, form.labelFor, form.dispatchName);
+              }}
+              inputValidator={() => {
+                defaultValidatorHandler(form.dispatchName, form.labelFor);
+              }}
               errorMessage={form.errorMessage}
               type={form.type}
               error={form.error}
             />
           ))}
+
+          <CusForm
+            key={confirmPassword.label}
+            formControlStyle={confirmPassword.formControlStyle}
+            labelFor={confirmPassword.labelFor}
+            label={confirmPassword.label}
+            placeholder={confirmPassword.placeholder}
+            inputState={confirmPassword.inputState}
+            startAdornmentIcon={
+              confirmPassword.startAdornmentIcon && confirmPassword.startAdornmentIcon
+            }
+            endAdornmentIcon={confirmPassword.endAdornmentIcon && confirmPassword.endAdornmentIcon}
+            endAdornmentIconClick={
+              confirmPassword.endAdornmentIconClick && confirmPassword.endAdornmentIconClick
+            }
+            endAdornmentIconMouseDown={
+              confirmPassword.endAdornmentIconMouseDown && confirmPassword.endAdornmentIconMouseDown
+            }
+            inputChangeHandler={
+              confirmPasswordChangeHandler
+            }
+            inputValidator={
+              confirmPasswordValidatorHandler
+            }
+            errorMessage={confirmPassword.errorMessage}
+            type={confirmPassword.type}
+            error={confirmPassword.error}
+          />
 
           <Button
             disabled={!formIsValid || isLoading}
@@ -289,7 +265,6 @@ const PasswordReset: React.FC<any> = (props) => {
 
         {isLoading && <Loader style={classes.loader} design="orange" />}
       </div>
-
     </React.Fragment>
   );
 

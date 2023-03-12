@@ -1,4 +1,4 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import {  configureStore } from "@reduxjs/toolkit";
 import authSlice from "./auth";
 import snackBarSlice from "./snackbar";
 

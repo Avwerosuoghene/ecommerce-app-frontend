@@ -1,13 +1,12 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import Auth from "./pages/auth/auth";
 import PasswordReset from "./pages/auth/password-reset/password-reset";
 import Signup from "./pages/auth/signup/signup";
-import EarPhones from "./pages/earphones/earphones";
 import Speakers from "./pages/speakers/speakers";
 import Login from "./pages/auth/login/login";
 import Home from "./pages/main/home/home";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { authActions } from "./redux/store/auth";
 import ProductInfo from "./pages/product_info/product_info";
 import Main from "./pages/main/main";
@@ -18,8 +17,11 @@ import Admin from "./pages/admin/admin";
 import AdminHome from "./pages/admin/admin-home/admin-home";
 import AdminUpload from "./pages/admin/admin-upload/admin-upload";
 
+
+
 const AppRoutes = () => {
   const authState = useSelector((state: any) => state.auth);
+
 
   return (
     <section>
@@ -39,8 +41,10 @@ const AppRoutes = () => {
         <Route
           path="/main"
           element={
-            authState.isLoggedIn ? <Main /> : <Navigate replace to={"/"} />
+            authState.isLoggedIn && authState.userType === 'buyer' ? <Main /> : <Navigate replace to={"/"} />
           }
+
+       
         >
           <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<Home />} />
@@ -51,10 +55,13 @@ const AppRoutes = () => {
         </Route>
       </Routes>
       <Routes>
-        <Route path="/admin" element={<Admin />}>
+        <Route path="/admin"  element={
+            authState.isLoggedIn && authState.userType === 'seller' ? <Admin /> :   <Navigate replace to={"/"} />
+          }>
           <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<AdminHome />} />
           <Route path="upload" element={<AdminUpload />} />
+          <Route path="*" element={<ErrorPage />} />
         </Route>
       </Routes>
 
@@ -67,7 +74,9 @@ const AppRoutes = () => {
       <Routes>
 
       </Routes> */}
-      <Routes></Routes>
+  
+      <Routes>
+      </Routes>
     </section>
   );
 };

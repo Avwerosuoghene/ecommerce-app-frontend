@@ -14,99 +14,48 @@ import Button from "../../../components/UI/button/Button";
 import useHttp from "../../../hooks/useHttp";
 import classes from "./checkout.module.scss";
 
-const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-
-// const reducerFunction = (test: any, action: any, state: any) => {
-//   if (action.type === "INPUT") {
-   
-//     return {
-//       value: action.value,
-//       isValid: test,
-//     };
-//   }
-//   if (action.type === "BLUR") {
-//     return { value: state.value, isValid: state.isValid, touched: true };
-//   }
-//   return { value: "", isValid: false };
-// };
-
-const defaultReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    switch (action.element) {
-      case "email":
-        test = emailTest.test(action.value.trim());
-        break;
-      case "phone":
-        if (action.value.length > 11) {
-          return {
-            value: state.value,
-            isValid: true,
-          };
-        }
-        action.value = action.value.replace(/\D/g, "");
-        test = action.value.trim().length === 11;
-        break;
-      case "zip code":
-        action.value = action.value.replace(/\D/g, "");
-        test = action.value.trim().length > 3;
-        break;
-      default:
-        test = action.value.trim().length > 3;
-        break;
-    }
-  } else {
-    test = null;
-  }
-  // return HelperComponent.reducerFunction(test, action, state);
-};
 
 
-const Checkout: React.FC<any>  = () => {
+
+const Checkout: React.FC<any> = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-    const helperComponent = new HelperComponent();
+  const helperComponent = new HelperComponent();
 
   const [formIsValid, setFormIsValid] = useState(false);
-  const [emailState, dispatchEmail] = useReducer(helperComponent.defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
-  const [phoneState, dispatchPhone] = useReducer(helperComponent.defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
-  const [userNameState, dispatchUserName] = useReducer(helperComponent.defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
 
-  const [addressState, dispatchAddress] = useReducer(helperComponent.defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [emailState, dispatchEmail] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
+  const [phoneState, dispatchPhone] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
+  const [userNameState, dispatchUserName] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
-  const [zipState, dispatchZipCode] = useReducer(helperComponent.defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [addressState, dispatchAddress] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
-  const [cityState, dispatchCity] = useReducer(helperComponent.defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [zipState, dispatchZipCode] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
-  const [countryState, dispatchCountry] = useReducer(helperComponent.defaultReducer, {
-    value: "",
-    isValid: true,
-    touched: false,
-  });
+  const [cityState, dispatchCity] = useReducer(helperComponent.defaultReducer, 
+    helperComponent.initialDispatchState
+  
+  );
+
+  const [countryState, dispatchCountry] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
   const [open, setOpen] = useState(false);
 
@@ -121,9 +70,7 @@ const Checkout: React.FC<any>  = () => {
 
   const formSubmissionHandler = async (event: any) => {
     event.preventDefault();
- 
   };
-
 
   useEffect(() => {
     const effectsSession = setTimeout(() => {
@@ -135,7 +82,6 @@ const Checkout: React.FC<any>  = () => {
           cityIsValid &&
           countryIsValid
       );
-      console.log(formIsValid);
     }, 500);
 
     return () => {
@@ -149,7 +95,6 @@ const Checkout: React.FC<any>  = () => {
     cityIsValid,
     countryIsValid,
   ]);
-  
 
   const checkoutHandler = () => {
     setOpen(true);
@@ -160,14 +105,21 @@ const Checkout: React.FC<any>  = () => {
     navigate("/main/home");
   };
 
-  const defaultValidatorHandler =(dispatch: any) => {
-    dispatch({ type: "BLUR", element: 'name' });
-  }
+  const defaultValidatorHandler = (dispatch: any,  element: string) => {
+    dispatch({ type: "BLUR", element: element });
+  };
 
-
-  const defaultChangeHandler = (event: any, element: string, dispatchFunction: any) => {
-    dispatchFunction({ type: "INPUT", value: event.target.value , element: element});
-  }
+  const defaultChangeHandler = (
+    event: any,
+    element: string,
+    dispatchFunction: any
+  ) => {
+    dispatchFunction({
+      type: "INPUT",
+      value: event.target.value,
+      element: element,
+    });
+  };
 
   const paymentMethodHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPaymentMethodState((event.target as HTMLInputElement).value);
@@ -203,7 +155,6 @@ const Checkout: React.FC<any>  = () => {
       idx: 3,
     },
   ];
-  
 
   const billingInfoForms = [
     {
@@ -352,13 +303,15 @@ const Checkout: React.FC<any>  = () => {
                       form.endAdornmentIconMouseDown &&
                       form.endAdornmentIconMouseDown
                     }
-                    inputChangeHandler = {
-                      (event: any) => {
-                        defaultChangeHandler(event, form.labelFor, form.dispatchName)
-                      }
-                    }
+                    inputChangeHandler={(event: any) => {
+                      defaultChangeHandler(
+                        event,
+                        form.labelFor,
+                        form.dispatchName
+                      );
+                    }}
                     inputValidator={() => {
-                      defaultValidatorHandler(form.dispatchName);
+                      defaultValidatorHandler(form.dispatchName, form.labelFor);
                     }}
                     errorMessage={form.errorMessage}
                     type={form.type}
@@ -390,13 +343,15 @@ const Checkout: React.FC<any>  = () => {
                       form.endAdornmentIconMouseDown &&
                       form.endAdornmentIconMouseDown
                     }
-                    inputChangeHandler = {
-                      (event: any) => {
-                        defaultChangeHandler(event, form.labelFor, form.dispatchName)
-                      }
-                    }
+                    inputChangeHandler={(event: any) => {
+                      defaultChangeHandler(
+                        event,
+                        form.labelFor,
+                        form.dispatchName
+                      );
+                    }}
                     inputValidator={() => {
-                      defaultValidatorHandler(form.dispatchName);
+                      defaultValidatorHandler(form.dispatchName, form.labelFor);
                     }}
                     errorMessage={form.errorMessage}
                     type={form.type}

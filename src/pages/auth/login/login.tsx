@@ -1,12 +1,8 @@
-import {
- 
-  Checkbox,
-  FormControlLabel,
-} from "@mui/material";
+import { Checkbox, FormControlLabel } from "@mui/material";
 import React, { useEffect, useReducer, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { NavLink, useNavigate } from "react-router-dom";
-import {  useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import classes from "./login.module.scss";
 import { ReactComponent as MailIcon } from "../../../assets/images/Message.svg";
@@ -17,44 +13,12 @@ import Loader from "../../../components/loader/loader";
 import useHttp from "../../../hooks/useHttp";
 import { login } from "../../../services/api";
 import { authActions } from "../../../redux/store/auth";
+import { HelperComponent } from "../../../components/helper/helper.component";
 
-const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-
-const reducerFunction = (test: any, type: string, action: any, state: any) => {
-  if (action.type === "INPUT") {
-    return {
-      value: action.value,
-      isValid: test,
-    };
-  }
-  if (action.type === "BLUR") {
-    return {  value: state.value, isValid: state.isValid, touched: true  };
-  }
-  return { value: "", isValid: false };
-};
-
-const emailReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = emailTest.test(action.value.trim());
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
-};
-
-const passwordReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = action.value.trim().length >= 6;
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
-};
 
 const Login: React.FC<any> = (props) => {
-  // const snackBarIsOpen = useSelector((state: any) => state.snackBar.isOpen);
+
+  const helperComponent = new HelperComponent();
   const navigate = useNavigate();
   const [formIsValid, setFormIsValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -63,23 +27,19 @@ const Login: React.FC<any> = (props) => {
 
   const { sendRequest } = useHttp();
 
-  const [emailState, disptachEmaiil] = useReducer(emailReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [emailState, disptachEmaiil] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
-  const [passwordState, disptachPassword] = useReducer(passwordReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [passwordState, disptachPassword] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
   const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
 
-  // useEffect(() => {
-  // }, [snackBarIsOpen])
 
   const formSubmissionHandler = async (event: any) => {
     event.preventDefault();
@@ -92,14 +52,20 @@ const Login: React.FC<any> = (props) => {
     try {
       setIsLoading(true);
       const apiResponse = await sendRequest(loginPayload, login);
-      console.log(apiResponse)
+      console.log(apiResponse);
       setIsLoading(false);
       if (apiResponse.isSuccess) {
-        console.log(apiResponse)
+        console.log(apiResponse);
         const userId = apiResponse.data.id;
-        const token = apiResponse.data.token
-        dispatch(authActions.login({token, userId}));
-        navigate("/main/home");
+        const token = apiResponse.data.token;
+        const userType = apiResponse.data.userType;
+        dispatch(authActions.login({ token, userId, userType }));
+        if (userType === 'buyer') {
+          navigate("/main/home");
+        } else {
+          navigate("/admin");
+        }
+       
       }
       console.log(apiResponse.isSuccess);
     } catch (error) {
@@ -118,23 +84,22 @@ const Login: React.FC<any> = (props) => {
     };
   }, [emailIsValid, passwordIsValid]);
 
-  const emailChangeHandler = (event: any) => {
-    if (event.target.value !== undefined) {
-      disptachEmaiil({ type: "INPUT", value: event.target.value });
-    }
+  const defaultValidatorHandler = (dispatch: any, element: string) => {
+    dispatch({ type: "BLUR", element:element});
   };
 
-  const passwordChangeHandler = (event: any) => {
-    disptachPassword({ type: "INPUT", value: event.target.value });
+  const defaultChangeHandler = (
+    event: any,
+    element: string,
+    dispatchFunction: any
+  ) => {
+    dispatchFunction({
+      type: "INPUT",
+      value: event.target.value,
+      element: element,
+    });
   };
 
-  const emailValidatorHandler = () => {
-    disptachEmaiil({ type: "BLUR" });
-  };
-
-  const passwordValidatorHandler = () => {
-    disptachPassword({ type: "BLUR" });
-  };
 
   const handleClickShowPassword = () => {
     setShowPassword((prevState: boolean) => {
@@ -151,31 +116,29 @@ const Login: React.FC<any> = (props) => {
   const renderedForms = [
     {
       formControlStyle: classes.emailForm,
-      labelFor: "login-email",
+      labelFor: "email",
       label: "Email",
       placeholder: "Insert Email",
       inputState: emailState,
-      error: !emailState.isValid ,
+      dispatchName: disptachEmaiil,
+      error: !emailState.isValid && emailState.touched,
       startAdornmentIcon: <MailIcon stroke="green" />,
       endAdornment: null,
-      inputChangeHandler: emailChangeHandler,
-      inputValidator: emailValidatorHandler,
       errorMessage: "Kindly enter a valid mail",
       type: "text",
     },
     {
       formControlStyle: classes.passwordForm,
       labelFor: "login-password",
-      label: "Password",
+      label: "password",
       placeholder: "Enter Password",
       inputState: passwordState,
-      error: !passwordState.isValid,
+      dispatchName: disptachPassword,
+      error: !passwordState.isValid && passwordState.touched,
       startAdornmentIcon: <LockIcon />,
       endAdornmentIcon: showPassword ? <VisibilityOff /> : <Visibility />,
       endAdornmentIconClick: handleClickShowPassword,
       endAdornmentIconMouseDown: handleMouseDownPassword,
-      inputChangeHandler: passwordChangeHandler,
-      inputValidator: passwordValidatorHandler,
       errorMessage: "   Invalid Password",
       type: showPassword ? "text" : "password",
     },
@@ -206,8 +169,18 @@ const Login: React.FC<any> = (props) => {
               endAdornmentIconMouseDown={
                 form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown
               }
-              inputChangeHandler={form.inputChangeHandler}
-              inputValidator={form.inputValidator}
+              // inputChangeHandler={form.inputChangeHandler}
+              // inputValidator={form.inputValidator}
+              inputChangeHandler={(event: any) => {
+                defaultChangeHandler(
+                  event,
+                  form.labelFor,
+                  form.dispatchName
+                );
+              }}
+              inputValidator={() => {
+                defaultValidatorHandler(form.dispatchName,form.labelFor );
+              }}
               errorMessage={form.errorMessage}
               type={form.type}
               error={form.error}

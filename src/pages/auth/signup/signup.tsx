@@ -28,53 +28,7 @@ import { snackBarActions } from "../../../redux/store/snackbar";
 import useHttp from "../../../hooks/useHttp";
 import Loader from "../../../components/loader/loader";
 import CustomSelect from "../../../components/custom-select/custom-select";
-
-const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
-const passwordTest = new RegExp(
-  /^(?=.*\d{1,})(?=.*[A-Z]{1,})[\w\d[\]{};:=<>_+^#$@!%*?&\.]{6,}$/
-);
-const reducerFunction = (test: any, type: string, action: any, state: any) => {
-  if (action.type === "INPUT") {
-    return {
-      value: action.value,
-      isValid: test,
-    };
-  }
-  if (action.type === "BLUR") {
-    return { value: state.value, isValid: state.isValid ,  isTouched: true};
-  }
-  return { value: "", isValid: false };
-};
-
-const emailReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = emailTest.test(action.value.trim());
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
-};
-
-const passwordReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = passwordTest.test(action.value.trim());
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
-};
-
-const userNameReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    test = action.value.trim().length > 3;
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, "email", action, state);
-};
+import { HelperComponent } from "../../../components/helper/helper.component";
 
 const Signup: React.FC<any> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -84,28 +38,26 @@ const Signup: React.FC<any> = (props) => {
   const [showPassword, setShowPassword] = useState(false);
   const { sendRequest } = useHttp();
   const dispatch = useDispatch();
-  const [userType, setUserType] = useState('Buyer');
+  const [userType, setUserType] = useState("Buyer");
 
-  const userTypes = ['Seller', 'Buyer']
+  const userTypes = ["Seller", "Buyer"];
+  const helperComponent = new HelperComponent();
   // const snackBarIsOpen = useSelector((state: any) => state.snackBar.isOpen);
 
-  const [emailState, disptachEmaiil] = useReducer(emailReducer, {
-    value: " ",
-    isValid: false,
-    isTouched: false
-  });
+  const [emailState, dispatchEmaiil] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
-  const [passwordState, disptachPassword] = useReducer(passwordReducer, {
-    value: "",
-    isValid: false,
-    isTouched: false
-  });
+  const [passwordState, dispatchPassword] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
-  const [userNameState, disptachUserName] = useReducer(userNameReducer, {
-    value: "",
-    isValid: false,
-    isTouched: false
-  });
+  const [userNameState, dispatchUserName] = useReducer(
+    helperComponent.defaultReducer,
+    helperComponent.initialDispatchState
+  );
 
   const [termsnConditionsIsValidState, setTermsnConditionsIsValidState] =
     useState(false);
@@ -123,6 +75,7 @@ const Signup: React.FC<any> = (props) => {
       name: userNameState.value,
       email: emailState.value,
       password: passwordState.value,
+      userType: userType.toLowerCase()
     };
 
     try {
@@ -160,36 +113,12 @@ const Signup: React.FC<any> = (props) => {
     termsnConditionsIsValidState,
   ]);
 
-  const emailChangeHandler = (event: any) => {
-    if (event.target.value !== undefined) {
-      disptachEmaiil({ type: "INPUT", value: event.target.value });
-    }
-  };
+
 
   const termsNCChangeHandler = () => {
     setTermsnConditionsIsValidState((prevState: any) => {
       return !prevState;
     });
-  };
-
-  const passwordChangeHandler = (event: any) => {
-    disptachPassword({ type: "INPUT", value: event.target.value });
-  };
-
-  const userNameChangeHandler = (event: any) => {
-    disptachUserName({ type: "INPUT", value: event.target.value });
-  };
-
-  const userNameValidatorHandler = () => {
-    disptachUserName({ type: "BLUR" });
-  };
-
-  const emailValidatorHandler = () => {
-    disptachEmaiil({ type: "BLUR" });
-  };
-
-  const passwordValidatorHandler = () => {
-    disptachPassword({ type: "BLUR" });
   };
 
   const handleClickShowPassword = () => {
@@ -198,9 +127,11 @@ const Signup: React.FC<any> = (props) => {
     });
   };
 
-  const userTypeChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const userTypeChangeHandler = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setUserType(event.target.value);
-  }
+  };
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -208,52 +139,62 @@ const Signup: React.FC<any> = (props) => {
     event.preventDefault();
   };
 
-  // const handleSnackBarClose = () => {
-  //   dispatch(snackBarActions.close());
-  // };
+  const defaultValidatorHandler = (dispatchName: any, element: string) => {
+    dispatchName({ type: "BLUR", element: element });
+  };
+
+  const defaultChangeHandler = (
+    event: any,
+    element: string,
+    dispatchFunction: any
+  ) => {
+
+    dispatchFunction({
+      type: "INPUT",
+      value: event.target.value,
+      element: element,
+    });
+  };
 
   const renderedForms = [
     {
       formControlStyle: classes.emailForm,
-      labelFor: "signup-username",
+      labelFor: "username",
       label: "Full Name",
       placeholder: "Insert Full Name",
+      dispatchName: dispatchUserName,
       inputState: userNameState,
-      error: !userNameState.isValid && userNameState.isTouched,
+      error: !userNameState.isValid && userNameState.touched,
       startAdornmentIcon: <ProfileIcon stroke="green" />,
       endAdornment: null,
-      inputChangeHandler: userNameChangeHandler,
-      inputValidator: userNameValidatorHandler,
       errorMessage: " Kindly enter a valid name",
-      type: "text",
+      type: "text"
     },
     {
       formControlStyle: classes.email,
-      labelFor: "signup-email",
+      labelFor: "email",
       label: "Email",
+      dispatchName: dispatchEmaiil,
       placeholder: "Insert Email",
       inputState: emailState,
-      error: !emailState.isValid && emailState.isTouched,
+      error: !emailState.isValid && emailState.touched,
       startAdornmentIcon: <MailIcon stroke="green" />,
       endAdornment: null,
-      inputChangeHandler: emailChangeHandler,
-      inputValidator: emailValidatorHandler,
       errorMessage: "  Kindly enter a valid mail",
       type: "text",
     },
     {
       formControlStyle: classes.password,
-      labelFor: "signup-password",
+      labelFor: "sup_password",
       label: "Password",
       placeholder: "Enter Password",
+      dispatchName: dispatchPassword,
       inputState: passwordState,
-      error: !passwordState.isValid && passwordState.isTouched,
+      error: !passwordState.isValid && passwordState.touched,
       startAdornmentIcon: <LockIcon />,
       endAdornmentIcon: showPassword ? <VisibilityOff /> : <Visibility />,
       endAdornmentIconClick: handleClickShowPassword,
       endAdornmentIconMouseDown: handleMouseDownPassword,
-      inputChangeHandler: passwordChangeHandler,
-      inputValidator: passwordValidatorHandler,
       errorMessage:
         "  Password must contain atleast one number, one upper case character and be atleast 6 characters long",
       type: showPassword ? "text" : "password",
@@ -289,8 +230,16 @@ const Signup: React.FC<any> = (props) => {
               endAdornmentIconMouseDown={
                 form.endAdornmentIconMouseDown && form.endAdornmentIconMouseDown
               }
-              inputChangeHandler={form.inputChangeHandler}
-              inputValidator={form.inputValidator}
+              inputChangeHandler={(event: any) => {
+                defaultChangeHandler(
+                  event,
+                  form.labelFor,
+                  form.dispatchName
+                );
+              }}
+              inputValidator={() => {
+                defaultValidatorHandler(form.dispatchName, form.labelFor);
+              }}
               errorMessage={form.errorMessage}
               type={form.type}
               error={form.error}
