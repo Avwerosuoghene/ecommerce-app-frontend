@@ -19,7 +19,6 @@ import { ReactComponent as LockIcon } from "../../../assets/images/Lock.svg";
 import { useNavigate } from "react-router-dom";
 import Button from "../../../components/UI/button/Button";
 import CusForm from "../../../components/form/form";
-import { useDispatch, useSelector } from "react-redux";
 import { passwordReset } from "../../../services/api";
 import { IpasswordResetPayload } from "../../../models/types";
 import useHttp from "../../../hooks/useHttp";
@@ -31,7 +30,7 @@ const PasswordReset: React.FC<any> = (props) => {
   const [formIsValid, setFormIsValid] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [passwordMatch, setPasswordMatch] = useState(false);
   const [formPageVisible, setFormPageVisible] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -99,6 +98,10 @@ const PasswordReset: React.FC<any> = (props) => {
     element: string,
     dispatchFunction: any
   ) => {
+    if (element === 'sup_password' && confirmPasswordState) {
+      console.log('in check')
+      setPasswordMatch(event.target.value === confirmPasswordState);
+    }
     dispatchFunction({
       type: "INPUT",
       value: event.target.value,
@@ -175,7 +178,7 @@ const PasswordReset: React.FC<any> = (props) => {
     label: "Confirm Password",
     placeholder: "Re-enter Password",
     inputState: confirmPasswordState,
-    error: !passwordMatch,
+    error: !passwordMatch && passwordState.touched,
     startAdornmentIcon: <LockIcon />,
     endAdornmentIcon: showConfirmPassword ? <VisibilityOff /> : <Visibility />,
     endAdornmentIconClick: handleClickShowConfirmPassword,

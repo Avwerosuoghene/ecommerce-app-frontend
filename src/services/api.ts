@@ -1,4 +1,4 @@
-import { IloginPayload, IpasswordResetPayload, IsignUpPayload } from "../models/types";
+import { IloginPayload, IpasswordResetPayload, IpostUploadPayload, IsignUpPayload } from "../models/types";
 import { BASE_URL } from "../environment";
 import axios from "axios";
 
@@ -43,6 +43,21 @@ export const login = async (
   try {
     const response = await axios.post(`${baseUrl}auth/login`, 
     loginPayload
+      );
+      return { response };
+  } catch(error: any) {
+    console.log(error)
+    const errorRes = error
+    return errorRes
+  }
+};
+
+export const postUpload = async (
+  postUploadPayload: IpostUploadPayload
+) => {
+  try {
+    const response = await axios.post(`${baseUrl}admin/products`, 
+    postUploadPayload
       );
       return { response };
   } catch(error: any) {

@@ -1,15 +1,23 @@
 export interface IloginPayload {
-    email: string,
-    password: string, 
+  email: string;
+  password: string;
 }
 
 export interface IsignUpPayload extends IloginPayload {
-
-    name: string
+  name: string;
 }
 
 export interface IpasswordResetPayload extends IloginPayload {
-    confirmPassword: string
+  confirmPassword: string;
+}
+
+export interface IpostUploadPayload {
+  title: string;
+  price: number;
+  category: string;
+  description: string;
+  features: Array<Object>;
+  image: File;
 }
 
 //   export interface  IloginPayload {

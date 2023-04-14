@@ -12,6 +12,7 @@ const useHttp = () => {
   const sendRequest = async (payload: any, httpFunction: any) => {
     let message = "";
     const asyncResponse = await httpFunction(payload);
+    console.log(asyncResponse);
     if (!asyncResponse.response && !asyncResponse.response.data) {
       message = asyncResponse.message;
       openSnackBarAction(message, "error");
@@ -25,9 +26,11 @@ const useHttp = () => {
       openSnackBarAction(message, "success");
       return data;
     }
-    message = asyncResponse.response.data.data
-      ? asyncResponse.response.data.data[0].msg
-      : asyncResponse.response.data.message;
+    message = asyncResponse.response.data.message;
+    // console.log(asyncResponse.response.data.data[0].message);
+    // message = asyncResponse.response.data.data
+    //   ?asyncResponse.response.data.data[0].message
+    //   : asyncResponse.response.data.message ;
     openSnackBarAction(message, "warning");
     return false;
   };
