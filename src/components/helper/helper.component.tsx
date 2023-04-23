@@ -14,6 +14,13 @@ export class HelperComponent {
     if (action.type === "BLUR") {
       return { value: state.value, isValid: state.isValid, touched: true };
     }
+
+    if (action.type === "CLEAR") {
+      return {
+        value: "",
+        touched: false,
+      };
+    }
     return { value: "", isValid: false };
   };
 
@@ -39,6 +46,10 @@ export class HelperComponent {
         case "password":
           test = action.value.trim().length > 3;
           break;
+          case "price":
+            action.value = action.value.replace(/\D/g, "");
+            test = action.value > 0;
+            break;
         case "sup_password":
           test = this.passwordTest.test(action.value.trim());
           break;
@@ -55,6 +66,15 @@ export class HelperComponent {
     }
     return this.reducerFunction(test, action, state);
   };
+
+   getUser = (): string | undefined  =>{
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      return userId;
+    } else {
+      return ;
+    }
+  }
 
   initialDispatchState = {
     value: "",

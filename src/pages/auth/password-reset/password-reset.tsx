@@ -76,7 +76,7 @@ const PasswordReset: React.FC<any> = (props) => {
 
     try {
       setIsLoading(true);
-      const apiResponse = await sendRequest(paswordResetPayload, passwordReset);
+      const apiResponse = await sendRequest( passwordReset, paswordResetPayload);
       setIsLoading(false);
       if (apiResponse.isSuccess) {
         setFormPageVisible(false);

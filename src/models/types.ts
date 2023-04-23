@@ -17,7 +17,8 @@ export interface IpostUploadPayload {
   category: string;
   description: string;
   features: Array<Object>;
-  image: File;
+  image: any;
+  userId: string | undefined;
 }
 
 //   export interface  IloginPayload {

@@ -9,59 +9,74 @@ import { useNavigate } from "react-router-dom";
 import CusForm from "../../../components/form/form";
 import CustomSelect from "../../../components/custom-select/custom-select";
 import { ReactComponent as AddIcon } from "../../../assets/images/add.svg";
-import { IconButton, TextField } from "@mui/material";
+import { FormHelperText, IconButton, TextField } from "@mui/material";
 import { IpostUploadPayload } from "../../../models/types";
 import { postUpload } from "../../../services/api";
 import useHttp from "../../../hooks/useHttp";
+import { HelperComponent } from "../../../components/helper/helper.component";
+import { features } from "process";
 
-const reducerFunction = (test: any, action: any, state: any) => {
-  if (action.type === "INPUT") {
-    return {
-      value: action.value,
-      isValid: test,
-    };
-  }
-  if (action.type === "BLUR") {
-    return { value: state.value, isValid: state.isValid, touched: true };
-  }
-  return { value: "", isValid: false };
-};
+// const reducerFunction = (test: any, action: any, state: any) => {
+//   if (action.type === "INPUT") {
+//     return {
+//       value: action.value,
+//       isValid: test,
+//     };
+//   }
+//   if (action.type === "CLEAR") {
+//     return {
+//       value: "",
+//       touched: false,
+//     };
+//   }
+//   if (action.type === "BLUR") {
+//     return { value: state.value, isValid: state.isValid, touched: true };
+//   }
+//   return { value: "", isValid: false };
+// };
 
-const defaultReducer = (state: any, action: any) => {
-  let test;
-  if (action.value) {
-    switch (action.element) {
-      case "price":
-        action.value = action.value.replace(/\D/g, "");
-        test = action.value > 0;
-        break;
-      default:
-        test = action.value.trim().length > 3;
-        break;
-    }
-  } else {
-    test = null;
-  }
-  return reducerFunction(test, action, state);
-};
+// const defaultReducer = (state: any, action: any) => {
+//   let test;
+//   if (action.value) {
+//     switch (action.element) {
+//       case "price":
+//         action.value = action.value.replace(/\D/g, "");
+//         test = action.value > 0;
+//         break;
+//       default:
+//         test = action.value.trim().length > 2;
+//         break;
+//     }
+//   } else {
+//     test = null;
+//   }
+//   return reducerFunction(test, action, state);
+// };
 
 const AdminUpload = () => {
+  const helperComponent = new HelperComponent();
   const { sendRequest } = useHttp();
 
   const [imageDragOver, setImageDragOver] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [formIsValid, setFormIsValid] = useState(false);
-  const [titleState, dispatchTitle] = useReducer(defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
-  const [priceState, dispatchPrice] = useReducer(defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [titleState, dispatchTitle] = useReducer(
+    helperComponent.defaultReducer,
+    {
+      value: "",
+      isValid: false,
+      touched: false,
+    }
+  );
+  const [priceState, dispatchPrice] = useReducer(
+    helperComponent.defaultReducer,
+    {
+      value: "",
+      isValid: false,
+      touched: false,
+    }
+  );
 
   //   const [categoryState, dispatchCategory] = useReducer(defaultReducer, {
   //     value: "",
@@ -69,55 +84,90 @@ const AdminUpload = () => {
   //     touched: false,
   //   });
 
-  const [descriptionState, dispatchDescription] = useReducer(defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [descriptionState, dispatchDescription] = useReducer(
+    helperComponent.defaultReducer,
+    {
+      value: "",
+      isValid: false,
+      touched: false,
+    }
+  );
 
-  const [featureNameState, dispatchFeatureName] = useReducer(defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [featuresDescriptionState, dispatchFeaturesDescription] = useReducer(
+    helperComponent.defaultReducer,
+    {
+      value: "",
+      isValid: false,
+      touched: false,
+    }
+  );
 
-  const [featureQtyState, dispatchFeatureQty] = useReducer(defaultReducer, {
-    value: "",
-    isValid: false,
-    touched: false,
-  });
+  const [featureNameState, dispatchFeatureName] = useReducer(
+    helperComponent.defaultReducer,
+    {
+      value: "",
+      isValid: false,
+      touched: false,
+    }
+  );
 
-  const [selectedFeatures, setSelectedFeatures]: Array<any> = useState([{}]);
+  const [featureQtyState, dispatchFeatureQty] = useReducer(
+    helperComponent.defaultReducer,
+    {
+      value: "",
+      isValid: false,
+      touched: false,
+    }
+  );
+
+  const [selectedFeatures, setSelectedFeatures]: Array<any> = useState([]);
+  // let updatedFeatures: Array<Object>;
 
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const { isValid: titleIsValid } = titleState;
   const { isValid: priceIsValid } = priceState;
-  //   const { isValid: categoryIsValid } = categoryState;
+  const { isValid: featuresDescriptionIsValid } = featuresDescriptionState;
   const { isValid: descriptionIsValid } = descriptionState;
   const navigate = useNavigate();
 
   const imageInputRef: any = useRef();
 
-  const [imageFile, setImageFile]: any = useState();
+  const [imageFile, setImageFile]: any = React.useState();
 
-  useEffect(() => {}, [imageDragOver]);
+  useEffect(() => {
+    // updatedFeatures = selectedFeatures;
+  }, [imageDragOver, selectedFeatures, imageFile]);
 
   const formSubmissionHandler = async (event: any) => {
     event.preventDefault();
 
-    const postUploadPayload: IpostUploadPayload = {
-      title: titleState.value,
-      price: priceState.value,
-      category: selectedCategory,
-      description: descriptionState.value,
-      features: selectedFeatures,
-      image: imageFile,
-    };
+    const userId = helperComponent.getUser();
+
+    let formData = new FormData();
+    formData.append("image", imageFile.file);
+    formData.append("title", titleState.value);
+    formData.append("featuresDescription", featuresDescriptionState.value);
+    formData.append("price", priceState.value);
+    formData.append("description", descriptionState.value);
+    formData.append("category", selectedCategory);
+    formData.append("userId", userId!);
+
+    formData.append("features", JSON.stringify(selectedFeatures)!);
+
+    // const postUploadPayload: IpostUploadPayload = {
+    //   title: titleState.value,
+    //   price: priceState.value,
+    //   category: selectedCategory,
+    //   description: descriptionState.value,
+    //   features: selectedFeatures,
+    //   image: imageFile,
+    //   userId: helperComponent.getUser()
+    // };
 
     try {
       setIsLoading(true);
-      const apiResponse = await sendRequest(postUploadPayload, postUpload);
+      const apiResponse = await sendRequest(postUpload, formData);
       setIsLoading(false);
       if (apiResponse.isSuccess) {
         // setFormPageVisible(false);
@@ -141,7 +191,7 @@ const AdminUpload = () => {
       setFormIsValid(
         titleIsValid &&
           priceIsValid &&
-          //   categoryIsValid &&
+          featuresDescriptionIsValid &&
           descriptionIsValid &&
           selectedFeatures.length > 0 &&
           selectedCategory !== undefined
@@ -155,7 +205,7 @@ const AdminUpload = () => {
   }, [
     titleIsValid,
     priceIsValid,
-    // categoryIsValid,
+    featuresDescriptionIsValid,
     descriptionIsValid,
     selectedFeatures,
     selectedCategory,
@@ -171,11 +221,41 @@ const AdminUpload = () => {
   };
 
   const handleImageChange = (e: any) => {
-    setImageFile(URL.createObjectURL(e.target.files[0]));
+    console.log(e.target.files[0]);
+    setImageFile({
+      file: e.target.files[0],
+      url: URL.createObjectURL(e.target.files[0]),
+    });
+    console.log(imageFile);
   };
 
   const imageDragOverHandler = (event: any) => {
     event.preventDefault();
+  };
+
+  const addFeatureHandler = () => {
+    setSelectedFeatures((current: Array<Object>) => [
+      ...current,
+      { name: featureNameState.value, quantity: featureQtyState.value },
+    ]);
+    // setSelectedFeatures((current: Array<Object>) => [...current, {name:featureNameState.value, quantity: featureQtyState.value }]);
+    console.log(selectedFeatures);
+    dispatchFeatureName({
+      type: "CLEAR",
+      value: undefined,
+      element: "featureName",
+    });
+    dispatchFeatureQty({
+      type: "CLEAR",
+      value: undefined,
+      element: "featureQuantity",
+    });
+  };
+
+  const removeSelectedFeatureHandler = (index: number) => {
+    const updated = selectedFeatures;
+    updated.splice(index, 1);
+    setSelectedFeatures((current: Array<Object>) => [...updated]);
   };
 
   const imageDragEnterHandler = (event: any) => {
@@ -244,12 +324,34 @@ const AdminUpload = () => {
     },
   ];
 
+  const uploadForms_descriptions = [
+    {
+      labelFor: "Description",
+      label: "Description",
+      placeholder: "",
+      inputState: descriptionState,
+      dispatchName: dispatchDescription,
+      error: !descriptionState.isValid && descriptionState.touched,
+      errorMessage: " Kindly enter a valid description",
+    },
+    {
+      labelFor: "Features_Description",
+      label: "Features Description",
+      placeholder: "",
+      inputState: featuresDescriptionState,
+      dispatchName: dispatchFeaturesDescription,
+      error: !featuresDescriptionState.isValid && featuresDescriptionState.touched,
+      errorMessage: " Kindly enter a valid features description",
+    },
+  ];
+
   return (
     <section className={classes.upload_container}>
       <h3 className={classes.header}>Products</h3>
       <form
         onSubmit={formSubmissionHandler}
         className={classes.post_upload_form}
+        encType="multipart/form-data"
       >
         <div
           className={`${classes.uplodFile_container} ${
@@ -275,6 +377,7 @@ const AdminUpload = () => {
           </Button>
           <input
             type="file"
+            name="image"
             onChange={handleImageChange}
             style={{ display: "none" }}
             ref={imageInputRef}
@@ -329,18 +432,23 @@ const AdminUpload = () => {
         </div>
 
         <div className={classes.textField_container}>
-          <TextField
-            className={classes.textField}
-            label="Description"
-            multiline
-            rows={4}
-            onChange={(event: any) => {
-              defaultChangeHandler(event, "description", dispatchDescription);
-            }}
-            onBlur={() => {
-              defaultValidatorHandler(dispatchDescription);
-            }}
-          />
+          {uploadForms_descriptions.map((form: any) => (
+            <TextField
+            key={form.label}
+              className={`${classes.textField} ${classes[form.labelFor]}`}
+              label={form.label}
+              multiline
+              rows={4}
+              onChange={(event: any) => {
+                defaultChangeHandler(event, "description", form.dispatchName);
+              }}
+              onBlur={() => {
+                defaultValidatorHandler(form.dispatchName);
+              }}
+              error={form.error}
+              // errorMessage={form.errorMessage}
+            />
+          ))}
         </div>
 
         <div className={`${classes.textField_container} ${classes.features}`}>
@@ -351,127 +459,72 @@ const AdminUpload = () => {
               onChange={(event: any) => {
                 defaultChangeHandler(event, "feature", dispatchFeatureName);
               }}
+              value={featureNameState.value}
               onBlur={() => {
                 defaultValidatorHandler(dispatchFeatureName);
               }}
-            />
+              error={featureNameState.touched && !featureNameState.isValid}
+            >
+              {featureNameState.touched && !featureNameState.isValid && (
+                <FormHelperText error>Invalid Name</FormHelperText>
+              )}
+            </TextField>
             <TextField
               className={classes.featues_textfield}
               label="Qty"
               onChange={(event: any) => {
-                defaultChangeHandler(event, "qty", dispatchFeatureQty);
+                defaultChangeHandler(event, "price", dispatchFeatureQty);
               }}
               type="number"
               onBlur={() => {
                 defaultValidatorHandler(dispatchFeatureQty);
               }}
-            />
+              value={featureQtyState.value}
+            >
+              {featureQtyState.touched && !featureQtyState.isValid && (
+                <FormHelperText error>Invalid Price</FormHelperText>
+              )}
+            </TextField>
           </div>
 
           <div className={classes.features_list}>
             <Button
-              type="submit"
+              type="button"
               design="orange"
-              // onClick={addToCartHandler}
+              onClick={addFeatureHandler}
               style={classes.action_btn}
+              disabled={
+                (!featureNameState.isValid && !featureQtyState.isValid) ||
+                (featureNameState.isValid && !featureQtyState.isValid) ||
+                (featureQtyState.isValid && !featureNameState.isValid) ||
+                (featureQtyState.touched && !featureQtyState.isValid) ||
+                (featureNameState.touched && !featureNameState.isValid) ||
+                (!featureQtyState.touched && !featureNameState.touched)
+              }
             >
               ADD FEATURE
             </Button>
 
             <div className={classes.features_list_elements}>
-              {/* {selectedFeatures.map((form: any) => (
-
-))} */}
-              <div className={classes.feature_item}>
-                <p className={classes.amount}>1x</p>
-                <p>Headphone Unit</p>
-                <IconButton
-                  aria-label="substract"
-                  color="primary"
-                  className={classes.reduce_btn}
-                  // onClick={decreaseProductSelection}
-                >
-                  <RemoveIcon
-                    sx={{ color: "#000", fontSize: 12 }}
-                    className={classes.add}
-                  />
-                </IconButton>
-              </div>
-              <div className={classes.feature_item}>
-                <p className={classes.amount}>1x</p>
-                <p>Headphone Unit</p>
-                <IconButton
-                  aria-label="substract"
-                  color="primary"
-                  className={classes.reduce_btn}
-                  // onClick={decreaseProductSelection}
-                >
-                  <RemoveIcon
-                    sx={{ color: "#000", fontSize: 12 }}
-                    className={classes.add}
-                  />
-                </IconButton>
-              </div>
-              <div className={classes.feature_item}>
-                <p className={classes.amount}>1x</p>
-                <p>Headphone Unit</p>
-                <IconButton
-                  aria-label="substract"
-                  color="primary"
-                  className={classes.reduce_btn}
-                  // onClick={decreaseProductSelection}
-                >
-                  <RemoveIcon
-                    sx={{ color: "#000", fontSize: 12 }}
-                    className={classes.add}
-                  />
-                </IconButton>
-              </div>
-              <div className={classes.feature_item}>
-                <p className={classes.amount}>1x</p>
-                <p>Headphone Unit</p>
-                <IconButton
-                  aria-label="substract"
-                  color="primary"
-                  className={classes.reduce_btn}
-                  // onClick={decreaseProductSelection}
-                >
-                  <RemoveIcon
-                    sx={{ color: "#000", fontSize: 12 }}
-                    className={classes.add}
-                  />
-                </IconButton>
-              </div>
-              <div className={classes.feature_item}>
-                <p className={classes.amount}>1x</p>
-                <p>Headphone Unit</p>
-                <IconButton
-                  aria-label="substract"
-                  color="primary"
-                  className={classes.reduce_btn}
-                  // onClick={decreaseProductSelection}
-                >
-                  <RemoveIcon
-                    sx={{ color: "#000", fontSize: 12 }}
-                    className={classes.add}
-                  />
-                </IconButton>
-              </div>
-              <div className={classes.feature_item}>
-                <p className={classes.amount}>1x</p>
-                <p>Headphone Unit</p>
-                <IconButton
-                  aria-label="substract"
-                  color="primary"
-                  className={classes.reduce_btn}
-                  // onClick={decreaseProductSelection}
-                >
-                  <RemoveIcon
-                    sx={{ color: "#000", fontSize: 12 }}
-                    className={classes.add}
-                  />
-                </IconButton>
-              </div>
+              {selectedFeatures.map((feature: any, i: number) => (
+                <div className={classes.feature_item} key={i + feature.name}>
+                  <p className={classes.amount}>{feature.quantity} x</p>
+                  <p>{feature.name}</p>
+                  <IconButton
+                    aria-label="substract"
+                    color="primary"
+                    className={classes.reduce_btn}
+                    onClick={() => {
+                      removeSelectedFeatureHandler(i);
+                    }}
+                  >
+                    <RemoveIcon
+                      sx={{ color: "#000", fontSize: 12 }}
+                      className={classes.add}
+                    />
+                  </IconButton>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -488,7 +541,9 @@ const AdminUpload = () => {
           <Button
             type="submit"
             design="orange"
-            // onClick={addToCartHandler}
+            disabled={
+              !formIsValid || selectedFeatures.length <= 0 || !imageFile
+            }
             style={classes.action_btn}
           >
             SAVE
@@ -504,7 +559,11 @@ const AdminUpload = () => {
         >
           {!imageFile && <img src="/images/default_admin_upload.png" alt="" />}
           {imageFile && (
-            <img className={classes.uploaded_img} src={imageFile} />
+            <img
+              className={classes.uploaded_img}
+              src={imageFile.url}
+              alt="A product"
+            />
           )}
         </div>
         <div className={classes.text_area}>

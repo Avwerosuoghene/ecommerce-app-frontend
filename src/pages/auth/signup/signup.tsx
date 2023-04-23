@@ -80,7 +80,7 @@ const Signup: React.FC<any> = (props) => {
 
     try {
       setIsLoading(true);
-      const apiResponse = await sendRequest(signUpPayload, signUp);
+      const apiResponse = await sendRequest( signUp, signUpPayload);
       setIsLoading(false);
 
       if (apiResponse.isSuccess) {

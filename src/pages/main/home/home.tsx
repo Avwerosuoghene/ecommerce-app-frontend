@@ -4,10 +4,13 @@ import { createSearchParams, NavLink, useNavigate } from "react-router-dom";
 import RadioButton from "../../../components/UI/radioButton/radio-button";
 import Header from "../../header/header";
 import classes from "./home.module.scss";
-import { Button } from "@mui/material";
+import { Button, LinearProgress } from "@mui/material";
 import CusSwiper from "../../../components/swiper/swiper";
 import Card from "../../../components/UI/card/card";
 import Footer from "../../../components/footer/footer";
+import useHttp from "../../../hooks/useHttp";
+import { getProducts } from "../../../services/api";
+import { json } from "stream/consumers";
 
 // const useSwiperRef = <T extends HTMLElement>(): [T | null, React.Ref<T>] => {
 //   const [wrapper, setWrapper] = useState<T | null>(null)
@@ -22,9 +25,19 @@ import Footer from "../../../components/footer/footer";
 //   return [wrapper, ref]
 // }
 
+
+
 const Home = () => {
   const [radioBtnCheck, setRadioButtonCheck] = useState("first_page");
   const navigate = useNavigate();
+  const { sendRequest } = useHttp();
+  const [fetchedEarphones, setFetchedEarphones] = useState([])
+
+  useEffect(() => {
+    fetchproducts()
+  }, [])
+
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
@@ -40,6 +53,22 @@ const Home = () => {
     };
   }, [radioBtnCheck]);
 
+  const fetchproducts = async () => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(getProducts);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+      }
+      //  const parsedResponse = JSON.parse(apiResponse);
+      setFetchedEarphones(apiResponse.data)
+      
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching products upload ${error}`);
+    }
+  };
+
   const radioButtonValueChange = (event: any) => {
     const page = event.target.defaultValue;
 
@@ -47,8 +76,8 @@ const Home = () => {
   };
 
   const createCards = (cardsArray: any) => {
-    const generatedDisplayedCards = cardsArray.map((slide: any) => (
-      <Card slideContent={slide} key= {slide.serial} onCardClick = {onCardClicked} card_container = {classes.cardContainer} addToCartClicked = {addToCartHandler} />
+    const generatedDisplayedCards = fetchedEarphones.map((earphone: any) => (
+      <Card slideContent={earphone} key= {earphone._id} onCardClick = {onCardClicked} card_container = {classes.cardContainer} addToCartClicked = {addToCartHandler} />
     ));
     // console.log(generatedDisplayedCards)
     return generatedDisplayedCards;
@@ -165,6 +194,7 @@ const Home = () => {
   return (
     <Fragment>
       {/* <Header /> */}
+    {isLoading &&  < LinearProgress />}
       <section className={classes.home_container}>
         {/* New Product Page */}
         <div

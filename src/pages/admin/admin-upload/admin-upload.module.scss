@@ -92,6 +92,7 @@ p {
   .textField_container {
     grid-column: 1 / span 1;
 
+
     &.features {
       display: grid;
       grid-template-columns: 1fr 1.8fr;
@@ -134,6 +135,9 @@ p {
 
   .textField {
     width: 100%;
+    &.Description {
+      margin-bottom: 40px;
+    }
   }
 
   .action {

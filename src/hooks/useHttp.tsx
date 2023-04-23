@@ -9,9 +9,16 @@ const useHttp = () => {
   // const snackBarIsOpen = useSelector((state: any) => state.snackBar.isOpen);
   // const [apiSuccess, setApiSuccess] = useState(false);
 
-  const sendRequest = async (payload: any, httpFunction: any) => {
+  const sendRequest = async (httpFunction: any, payload?: any) => {
     let message = "";
-    const asyncResponse = await httpFunction(payload);
+
+    let asyncResponse;
+    if (payload ){
+      asyncResponse = await httpFunction(payload);
+    } else {
+      asyncResponse = await httpFunction()
+    }
+  
     console.log(asyncResponse);
     if (!asyncResponse.response && !asyncResponse.response.data) {
       message = asyncResponse.message;

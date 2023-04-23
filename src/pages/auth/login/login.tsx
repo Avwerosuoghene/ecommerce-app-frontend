@@ -51,7 +51,7 @@ const Login: React.FC<any> = (props) => {
 
     try {
       setIsLoading(true);
-      const apiResponse = await sendRequest(loginPayload, login);
+      const apiResponse = await sendRequest( login, loginPayload);
       console.log(apiResponse);
       setIsLoading(false);
       if (apiResponse.isSuccess) {

@@ -12,6 +12,7 @@ const Card = (props: any) => {
 //   const [slideContent, setSlideContent] = useState <any | undefined>(undefined);
   //   let stars:Array<{marked: boolean}>  = []
   let slideContent = {...props.slideContent};
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
     // console.log(slideContent)
@@ -21,7 +22,7 @@ const Card = (props: any) => {
         // console.log(slideContent)
     }, 2000)
     const starsReceived : any = [];
-        for (let i = 1; i <= slideContent.stars; i++) {
+        for (let i = 1; i <= slideContent.rating; i++) {
         
             starsReceived.push({marked: i})
         }
@@ -60,18 +61,17 @@ const Card = (props: any) => {
             className={classes.love_icon}
           />
         </IconButton>
-
-        <img src={slideContent.img} alt="" />
+        <img src={'http://localhost:9000/'+slideContent.image} alt="" />
       </div>
       <div className={classes.product_description}>
-        <h3>{slideContent.header}</h3>
+        <h3>{slideContent.title}</h3>
         <h4 className={classes.price}>{`$ ${slideContent.price}`} </h4>
       </div>
       <div className={classes.rating}>
         {stars.map((star) => (
             <StarIcon  key={star.marked }      sx={{ color: star.marked ? "#FFBF1B" : "#979797", fontSize: 20 }}/>
         ))}
-        <p className={classes.reviews}>({`${slideContent.ratings}  Ratings`})</p>
+        <p className={classes.reviews}>({`${slideContent.reviews}  Ratings`})</p>
       </div>
       <Button
             type="button"
