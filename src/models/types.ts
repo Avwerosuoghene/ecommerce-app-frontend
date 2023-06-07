@@ -16,12 +16,31 @@ export interface IpostUploadPayload {
   price: number;
   category: string;
   description: string;
-  features: Array<Object>;
+  features: Array<{name: string, quantity: number}>;
+  featuresDescription: string;
   image: any;
   userId: string | undefined;
 }
 
-//   export interface  IloginPayload {
-//     email: string,
-//     password: string,
-//   }
+export interface ProductI{
+  _id: string;
+  title: string;
+  price: number;
+  category: string;
+  description: string;
+  features: [
+    {
+      name: string;
+      quantity: number;
+    }
+  ];
+  featuresDescription: string;
+  rating: number;
+  reviews: number;
+  userId: Object;
+  image: string;
+
+  
+}
+
+

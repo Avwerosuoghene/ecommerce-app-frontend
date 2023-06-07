@@ -94,6 +94,7 @@ const CheckoutDialog = (props: any) => {
                   <RemoveIcon
                     sx={{ color: "#000", fontSize: 10 }}
                     className={classes.add}
+                                     
                   />
                 </IconButton>
 

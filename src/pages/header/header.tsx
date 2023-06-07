@@ -52,7 +52,10 @@ const Header = () => {
   return (
     <nav className={classes.nav_container}>
       <div className={classes.nav_body}>
-        <h1>audiophile</h1>
+        <Link to="/main/home">
+          <h1>audiophile</h1>
+        </Link>
+
         <div className={classes.nav_icons}>
           <SearchField />
 
@@ -96,7 +99,11 @@ const Header = () => {
         }}
       >
         <MenuItem onClick={handleClose} className={classes.menu_item}>
-          <IconButton onClick={openUserProfile} className={classes.menu_btn} disableRipple>
+          <IconButton
+            onClick={openUserProfile}
+            className={classes.menu_btn}
+            disableRipple
+          >
             <ProfileIcon className={classes.menu_icon} />
 
             <h4 className={classes.menuText}> User Profile</h4>
@@ -105,7 +112,11 @@ const Header = () => {
         <Divider />
 
         <MenuItem onClick={handleClose}>
-          <IconButton onClick={logoutHandler} className={classes.menu_btn} disableRipple>
+          <IconButton
+            onClick={logoutHandler}
+            className={classes.menu_btn}
+            disableRipple
+          >
             <LogoutIcon className={classes.menu_icon} />
             <h4 className={classes.menu_text}>Logout</h4>
           </IconButton>

@@ -1,44 +1,25 @@
-import { Fragment, useEffect, useRef, useState } from "react";
-import { createSearchParams, NavLink, useNavigate } from "react-router-dom";
+import { Fragment, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import RadioButton from "../../../components/UI/radioButton/radio-button";
-import Header from "../../header/header";
 import classes from "./home.module.scss";
-import { Button, LinearProgress } from "@mui/material";
+import { LinearProgress } from "@mui/material";
 import CusSwiper from "../../../components/swiper/swiper";
 import Card from "../../../components/UI/card/card";
-import Footer from "../../../components/footer/footer";
 import useHttp from "../../../hooks/useHttp";
 import { getProducts } from "../../../services/api";
-import { json } from "stream/consumers";
-
-// const useSwiperRef = <T extends HTMLElement>(): [T | null, React.Ref<T>] => {
-//   const [wrapper, setWrapper] = useState<T | null>(null)
-//   const ref = useRef<T>(null)
-
-//   useEffect(() => {
-//     if (ref.current) {
-//       setWrapper(ref.current)
-//     }
-//   }, [])
-
-//   return [wrapper, ref]
-// }
-
-
 
 const Home = () => {
   const [radioBtnCheck, setRadioButtonCheck] = useState("first_page");
   const navigate = useNavigate();
   const { sendRequest } = useHttp();
-  const [fetchedEarphones, setFetchedEarphones] = useState([])
+  const [fetchedEarphones, setFetchedEarphones] = useState([]);
 
   useEffect(() => {
-    fetchproducts()
-  }, [])
+    fetchproducts();
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
-
 
   useEffect(() => {
     const pageTimer = setTimeout(() => {
@@ -60,9 +41,7 @@ const Home = () => {
       setIsLoading(false);
       if (apiResponse.isSuccess) {
       }
-      //  const parsedResponse = JSON.parse(apiResponse);
-      setFetchedEarphones(apiResponse.data)
-      
+      setFetchedEarphones(apiResponse.data);
     } catch (error) {
       setIsLoading(false);
       console.log(`error in fetching products upload ${error}`);
@@ -75,31 +54,33 @@ const Home = () => {
     setRadioButtonCheck(page);
   };
 
-  const createCards = (cardsArray: any) => {
+  const createCards = (requiredType: string) => {
+
+    // const generatedDisplayedCards = fetchedEarphones.filter((contentType:any ) => (
+    //   contentType.category.toLowerCase() === requiredType
+    // ))
+
     const generatedDisplayedCards = fetchedEarphones.map((earphone: any) => (
-      <Card slideContent={earphone} key= {earphone._id} onCardClick = {onCardClicked} card_container = {classes.cardContainer} addToCartClicked = {addToCartHandler} />
+      <Card
+        slideContent={earphone}
+        key={earphone._id}
+        onCardClick={() => onCardClicked(earphone._id)}
+        card_container={classes.cardContainer}
+        addToCartClicked={addToCartHandler}
+      />
     ));
-    // console.log(generatedDisplayedCards)
     return generatedDisplayedCards;
   };
 
-  const onCardClicked = () => {
-  
-    navigate(`../product-info/${1}`);
-    
-  //   navigate({
-  //     pathname: "../product-info/",
-  //     search: createSearchParams({
-  //         id: "1"
-  //     }).toString()
-  // });
-    console.log('clicked')
-  }
+  const onCardClicked = (id: any) => {
+    navigate(`../product-info/${id}`);
+    console.log("clicked");
+  };
 
   const addToCartHandler = (e: any) => {
     e.stopPropagation();
-    console.log('add to cart clicked')
-  }
+    console.log("add to cart clicked");
+  };
 
   const newProductPages = [
     {
@@ -120,81 +101,13 @@ const Home = () => {
     },
   ];
 
-  const topDeals: any = [
-    {
-      img: "/images/headphone1.png",
-      header: "YX1 WIRELESS EARPHONES",
-      price: "1,750",
-      stars: 3,
-      ratings: 12,
-      serial: 1
-    },
-    {
-      img: "/images/headphone1.png",
-      header: "YX1 WIRELESS EARPHONES",
-      price: "1,750",
-      stars: 5,
-      ratings: 10,
-      serial: 2
-    },
-    {
-      img: "/images/headphone1.png",
-      header: "YX1 WIRELESS EARPHONES",
-      price: "1,750",
-      stars: 5,
-      ratings: 8,
-      serial: 3
-    },
-    {
-      img: "/images/headphone1.png",
-      header: "YX1 WIRELESS EARPHONES",
-      price: "1,750",
-      stars: 1,
-      ratings: 6,
-      serial: 4
-    },
-  ];
-
-  const trendingProducts: any = [
-    {
-      img: "/images/speaker1.png",
-      header: "YX1 WIRELESS EARPHONES",
-      price: "1,750",
-      stars: 3,
-      ratings: 12,
-      serial: 1
-    },
-    {
-      img: "/images/speaker1.png",
-      header: "XX59 Headphones",
-      price: "1,750",
-      stars: 5,
-      ratings: 10
-    },
-    {
-      img: "/images/speaker1.png",
-      header: "XX59 Headphones",
-      price: "1,750",
-      stars: 5,
-      ratings: 8
-    },
-    {
-      img: "/images/speaker1.png",
-      header: "YX1 WIRELESS EARPHONES",
-      price: "1,750",
-      stars: 1,
-      ratings: 6
-    },
-  ];
-
-  const cardsTopDeals: any = createCards(topDeals);
-  const cardsTrendingProducts: any = createCards(trendingProducts);
-  
+  const headPhones: any = createCards('headphones');
+  const speakers: any = createCards('speakers');
 
   return (
     <Fragment>
       {/* <Header /> */}
-    {isLoading &&  < LinearProgress />}
+      {isLoading && <LinearProgress />}
       <section className={classes.home_container}>
         {/* New Product Page */}
         <div
@@ -248,11 +161,11 @@ const Home = () => {
           {/* Top deals */}
           <div className={classes.products}>
             <h2>
-              <span>TOP</span>{" "}
-              <span className={classes.products_h2_span}>DEALS</span>
+              <span>HEADPHONES</span>{" "}
+              <span className={classes.products_h2_span}></span>
             </h2>
             <CusSwiper
-              slides={cardsTopDeals}
+              slides={headPhones}
               slide={classes.swiper_slide}
               slidesPerView={3}
               btnStyle={classes.swiper_btn}
@@ -264,11 +177,11 @@ const Home = () => {
           {/* Trending products */}
           <div className={classes.products}>
             <h2>
-              <span>TRENDING</span>{" "}
-              <span className={classes.products_h2_span}>PRODUCTS</span>
+              <span>SPEAKERS</span>{" "}
+              {/* <span className={classes.products_h2_span}>PRODUCTS</span> */}
             </h2>
             <CusSwiper
-              slides={cardsTrendingProducts}
+              slides={speakers}
               slide={classes.swiper_slide}
               slidesPerView={3}
               btnStyle={classes.swiper_btn}
@@ -278,8 +191,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-
     </Fragment>
   );
 };

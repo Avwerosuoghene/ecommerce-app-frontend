@@ -75,9 +75,73 @@ export const postUpload = async (postUploadPayload: IpostUploadPayload) => {
   }
 };
 
+export const editUpload = async (payload: {formData: string, id: string}) => {
+  try {
+    const response = await axios.put(
+      `${baseUrl}admin/product/${payload.id}`,
+      payload.formData,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+          // 'content-type': 'multipart/form-data'
+        },
+      }
+    );
+    return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
 export const getProducts = async () => {
   try {
-    const response = await axios.get(`${baseUrl}admin/products`);
+    const response = await axios.get(`${baseUrl}products`);
+    return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+export const getUserProducts = async () => {
+  const userId = localStorage.getItem("userId");
+  try {
+    const response = await axios.get(
+      `${baseUrl}productByUserId?userId=${userId}`
+    );
+    return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+export const getProductById = async (productId: any) => {
+  try {
+    const response = await axios.get(`${baseUrl}products/${productId}`);
+    return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+export const deleteProductById = async (productId: any) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/admin/product/${productId}`,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+          // 'content-type': 'multipart/form-data'
+        },
+      }
+    );
     return { response };
   } catch (error: any) {
     console.log(error);

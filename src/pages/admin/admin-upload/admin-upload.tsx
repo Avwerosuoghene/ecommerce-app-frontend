@@ -5,57 +5,22 @@ import { ReactComponent as UploadIcon } from "../../../assets/images/upload_icon
 import Button from "../../../components/UI/button/Button";
 
 import React, { useEffect, useReducer, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CusForm from "../../../components/form/form";
 import CustomSelect from "../../../components/custom-select/custom-select";
 import { ReactComponent as AddIcon } from "../../../assets/images/add.svg";
 import { FormHelperText, IconButton, TextField } from "@mui/material";
-import { IpostUploadPayload } from "../../../models/types";
-import { postUpload } from "../../../services/api";
+import { editUpload, getProductById, postUpload } from "../../../services/api";
 import useHttp from "../../../hooks/useHttp";
 import { HelperComponent } from "../../../components/helper/helper.component";
-import { features } from "process";
 
-// const reducerFunction = (test: any, action: any, state: any) => {
-//   if (action.type === "INPUT") {
-//     return {
-//       value: action.value,
-//       isValid: test,
-//     };
-//   }
-//   if (action.type === "CLEAR") {
-//     return {
-//       value: "",
-//       touched: false,
-//     };
-//   }
-//   if (action.type === "BLUR") {
-//     return { value: state.value, isValid: state.isValid, touched: true };
-//   }
-//   return { value: "", isValid: false };
-// };
 
-// const defaultReducer = (state: any, action: any) => {
-//   let test;
-//   if (action.value) {
-//     switch (action.element) {
-//       case "price":
-//         action.value = action.value.replace(/\D/g, "");
-//         test = action.value > 0;
-//         break;
-//       default:
-//         test = action.value.trim().length > 2;
-//         break;
-//     }
-//   } else {
-//     test = null;
-//   }
-//   return reducerFunction(test, action, state);
-// };
+
 
 const AdminUpload = () => {
   const helperComponent = new HelperComponent();
   const { sendRequest } = useHttp();
+  const baseImagePath = process.env.REACT_APP_IMAGE_URL ;
 
   const [imageDragOver, setImageDragOver] = useState(false);
 
@@ -78,11 +43,6 @@ const AdminUpload = () => {
     }
   );
 
-  //   const [categoryState, dispatchCategory] = useReducer(defaultReducer, {
-  //     value: "",
-  //     isValid: false,
-  //     touched: false,
-  //   });
 
   const [descriptionState, dispatchDescription] = useReducer(
     helperComponent.defaultReducer,
@@ -130,12 +90,23 @@ const AdminUpload = () => {
   const { isValid: featuresDescriptionIsValid } = featuresDescriptionState;
   const { isValid: descriptionIsValid } = descriptionState;
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const imageInputRef: any = useRef();
+  const [editStatus, setEditStatus] = useState(false)
 
   const [imageFile, setImageFile]: any = React.useState();
 
   useEffect(() => {
+    if(id !== undefined) {
+      console.log(id)
+      fetchproduct();
+      setEditStatus(true)
+    }
+  }, [])
+
+  useEffect(() => {
+   
     // updatedFeatures = selectedFeatures;
   }, [imageDragOver, selectedFeatures, imageFile]);
 
@@ -145,40 +116,101 @@ const AdminUpload = () => {
     const userId = helperComponent.getUser();
 
     let formData = new FormData();
-    formData.append("image", imageFile.file);
+    if(imageFile.file) {
+      formData.append("image", imageFile.file);
+    }
+
     formData.append("title", titleState.value);
     formData.append("featuresDescription", featuresDescriptionState.value);
     formData.append("price", priceState.value);
     formData.append("description", descriptionState.value);
     formData.append("category", selectedCategory);
     formData.append("userId", userId!);
-
     formData.append("features", JSON.stringify(selectedFeatures)!);
 
-    // const postUploadPayload: IpostUploadPayload = {
-    //   title: titleState.value,
-    //   price: priceState.value,
-    //   category: selectedCategory,
-    //   description: descriptionState.value,
-    //   features: selectedFeatures,
-    //   image: imageFile,
-    //   userId: helperComponent.getUser()
-    // };
 
     try {
       setIsLoading(true);
-      const apiResponse = await sendRequest(postUpload, formData);
+      let apiResponse;
+      console.log(editStatus)
+      if (!editStatus) {
+        apiResponse = await sendRequest(postUpload, formData);
+      } else {
+        apiResponse = await sendRequest(editUpload,{formData:formData, id:id });
+      }
+  
       setIsLoading(false);
       if (apiResponse.isSuccess) {
-        // setFormPageVisible(false);
-        // console.log(formPageVisible);
+        setTimeout(() => {
+          navigate("/admin/home")
+        },1000)
+    
       }
+
       console.log(apiResponse);
     } catch (error) {
       setIsLoading(false);
       console.log(`error in post upload ${error}`);
     }
   };
+
+  const fetchproduct = async () => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(getProductById, id);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        const {
+          category,
+          description,
+          features,
+          image,
+          price,
+          rating,
+          title,
+          featuresDescription,
+          reviews,
+        } = apiResponse.data;
+        populateFields(apiResponse.data)
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching products upload ${error}`);
+    }
+  };
+
+  const populateFields =(fieldsData: any) => {
+    // titleState.value = "test"
+    // console.log(descriptionState.value)
+    // descriptionState.value = 'testing'
+    dispatchTitle({
+      type: "INPUT",
+      value:fieldsData.title,
+      element: "title"
+    })
+    setSelectedCategory(fieldsData.category)
+    dispatchFeaturesDescription({
+      type: "INPUT",
+      value: fieldsData.featuresDescription,
+      element: "description"
+   })
+    dispatchDescription({
+      type: "INPUT",
+      value: fieldsData.description,
+      element: "description"
+   })
+   dispatchPrice({
+      type: "INPUT",
+      value: fieldsData.price.toString(),
+      element: "price"
+   })
+   setImageFile({
+    // file: baseImagePath+fieldsData.image,
+    url:  baseImagePath+fieldsData.image,
+  });
+   setSelectedFeatures([...fieldsData.features])
+  // descriptionState.value = fieldsData.data.description
+  } 
 
   const categorySelectionChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -377,7 +409,7 @@ const AdminUpload = () => {
           </Button>
           <input
             type="file"
-            name="image"
+            name="file"
             onChange={handleImageChange}
             style={{ display: "none" }}
             ref={imageInputRef}
@@ -439,6 +471,7 @@ const AdminUpload = () => {
               label={form.label}
               multiline
               rows={4}
+              value={form.inputState.value}
               onChange={(event: any) => {
                 defaultChangeHandler(event, "description", form.dispatchName);
               }}

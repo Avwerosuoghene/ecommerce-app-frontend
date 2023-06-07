@@ -1,0 +1,24 @@
+* {
+    box-sizing: border-box;
+}
+
+section.default_container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    grid-gap: 30px;
+    padding: 30px;
+    // width: 100%;
+    height: calc(100% - 90px);
+    overflow: auto;
+
+    .loader {
+        grid-column: 1/-1;
+    }
+
+    .card {
+        background-color: blue;
+        width: 450px;
+        height: 300px;
+        justify-self: center;
+    }
+}

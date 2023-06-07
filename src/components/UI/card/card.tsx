@@ -9,17 +9,13 @@ const Card = (props: any) => {
   const [contentLiked, setContentLiked] = useState(false);
   const [stars, setStars] = useState<Array<{ marked: number}>>([]);
   const [totalStars, setTotalStars] = useState(0);
-//   const [slideContent, setSlideContent] = useState <any | undefined>(undefined);
-  //   let stars:Array<{marked: boolean}>  = []
   let slideContent = {...props.slideContent};
-  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const baseImagePath = process.env.REACT_APP_IMAGE_URL ;
+;
 
   useEffect(() => {
-    // console.log(slideContent)
-    // console.log(slideContent)
 
     setTimeout(() => {
-        // console.log(slideContent)
     }, 2000)
     const starsReceived : any = [];
         for (let i = 1; i <= slideContent.rating; i++) {
@@ -61,7 +57,7 @@ const Card = (props: any) => {
             className={classes.love_icon}
           />
         </IconButton>
-        <img src={'http://localhost:9000/'+slideContent.image} alt="" />
+        <img src={baseImagePath+slideContent.image} alt="" />
       </div>
       <div className={classes.product_description}>
         <h3>{slideContent.title}</h3>

@@ -1,22 +1,26 @@
 import StarIcon from "@mui/icons-material/Star";
-import { IconButton } from "@mui/material";
+import { IconButton, LinearProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 
 import classes from "./product_info.module.scss";
 import Button from "../../components/UI/button/Button";
 import CheckoutDialog from "../../components/dialogs/checkout-dialog/checkout_dialog";
+import { getProductById } from "../../services/api";
+import useHttp from "../../hooks/useHttp";
+import { getProductByIdResponse } from "../../models/payload";
 
 const ProductInfo = () => {
   const [open, setOpen] = useState(false);
+  const baseImagePath = process.env.REACT_APP_IMAGE_URL;
 
   const addToCartHandler = (e: any) => {
     setOpen(true);
   };
 
-  const params = useParams();
+  const { id } = useParams();
 
   const increaseProductSelection = () => {};
 
@@ -24,34 +28,73 @@ const ProductInfo = () => {
     setOpen(false);
   };
 
+  const [product, setProduct] = useState<getProductByIdResponse>();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const { sendRequest } = useHttp();
+  console.log(product);
+
+  useEffect(() => {
+    fetchproduct();
+  }, []);
+
+  const fetchproduct = async () => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(getProductById, id);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        const {
+          category,
+          description,
+          features,
+          image,
+          price,
+          rating,
+          title,
+          featuresDescription,
+          reviews,
+        } = apiResponse.data;
+        setProduct({
+          category,
+          description,
+          features,
+          image,
+          price,
+          rating,
+          title,
+          featuresDescription,
+          reviews,
+        });
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching products upload ${error}`);
+    }
+  };
+
   const decreaseProductSelection = () => {};
   return (
     <Fragment>
+      {isLoading && <LinearProgress />}
       <section className={classes.product_detail_container}>
         <div className={classes.product_display}>
           <div className={classes.image_container}>
-            <img src="/images/headphone1.png" alt="" />
+            <img src={baseImagePath + product?.image} alt="" />
           </div>
           <div className={classes.new_product_heading}>
             <div className={classes.top_el}>
               <h4 className={classes.newP}>NEW PRODUCT</h4>
-              <NavLink
-                to={`/main/home`}
-                className={classes.goBack_navlink}
-              >
+              <NavLink to={`/main/home`} className={classes.goBack_navlink}>
                 Go Back
               </NavLink>
             </div>
 
-            <h2>XX99 Mark II Headphones</h2>
-            <p>
-              The new XX99 Mark II headphones is the pinnacle of pristine audio.
-              It redefines your premium headphone experience by reproducing the
-              balanced depth and precision of studio-quality sound.
-            </p>
+            <h2>{product?.title}</h2>
+            <p>{product?.description}</p>
 
             <div className={classes.price_rating}>
-              <h4>$ 2,999</h4>
+              <h4>$ {product?.price}</h4>
               <div className={classes.rating}>
                 <div className={classes.stars}>
                   <StarIcon sx={{ color: "#FFBF1B", fontSize: 20 }} />
@@ -108,33 +151,19 @@ const ProductInfo = () => {
           <div className={classes.features}>
             <h3>FEATURES</h3>
 
-            <p className={classes.p1}>
-              Featuring a genuine leather head strap and premium earcups, these
-              headphones deliver superior comfort for those who like to enjoy
-              endless listening. It includes intuitive controls designed for any
-              situation. Whether you’re taking a business call or just in your
-              own personal space, the auto on/off and pause features ensure that
-              you’ll never miss a beat.
-            </p>
-
-            <p>
-              The advanced Active Noise Cancellation with built-in equalizer
-              allow you to experience your audio world on your terms. It lets
-              you enjoy your audio in peace, but quickly interact with your
-              surroundings when you need to. Combined with Bluetooth 5. 0
-              compliant connectivity and 17 hour battery life, the XX99 Mark II
-              headphones gives you superior sound, cutting-edge technology, and
-              a modern design aesthetic.
-            </p>
+            <p className={classes.p1}>{product?.featuresDescription}</p>
           </div>
 
           <div className={classes.box_contents}>
             <h3>IN THE BOX</h3>
-            <div className={classes.content_values}>
-              <p className={classes.amount}>1x</p>
-              <p>Headphone Unit</p>
-            </div>
-            <div className={classes.content_values}>
+            {product?.features.map((feature) => (
+              <div className={classes.content_values}>
+                <p className={classes.amount}>{feature.quantity} x</p>
+                <p>{feature.name}</p>
+              </div>
+            ))}
+
+            {/* <div className={classes.content_values}>
               <p className={classes.amount}>2x</p>
               <p>Replacement Earcups</p>
             </div>
@@ -147,7 +176,7 @@ const ProductInfo = () => {
             <div className={classes.content_values}>
               <p className={classes.amount}>1x</p>
               <p>3.5mm 5m Audio Cable</p>
-            </div>
+            </div> */}
           </div>
         </div>
 

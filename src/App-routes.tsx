@@ -61,6 +61,7 @@ const AppRoutes = () => {
           <Route path="" element={<Navigate to="home" />} />
           <Route path="home" element={<AdminHome />} />
           <Route path="upload" element={<AdminUpload />} />
+          <Route path="upload/:id" element={<AdminUpload />} />
           <Route path="*" element={<ErrorPage />} />
         </Route>
       </Routes>
