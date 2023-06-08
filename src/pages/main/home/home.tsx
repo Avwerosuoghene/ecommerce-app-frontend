@@ -7,13 +7,15 @@ import { LinearProgress } from "@mui/material";
 import CusSwiper from "../../../components/swiper/swiper";
 import Card from "../../../components/UI/card/card";
 import useHttp from "../../../hooks/useHttp";
-import { getProducts } from "../../../services/api";
+import { addToCart, getProducts } from "../../../services/api";
+import { ProductI } from "../../../models/types";
+import { addToCartPayload, addToCartResponse } from "../../../models/payload";
 
 const Home = () => {
   const [radioBtnCheck, setRadioButtonCheck] = useState("first_page");
   const navigate = useNavigate();
   const { sendRequest } = useHttp();
-  const [fetchedEarphones, setFetchedEarphones] = useState([]);
+  const [fetchedEarphones, setFetchedEarphones] = useState <Array<ProductI>>([]);
 
   useEffect(() => {
     fetchproducts();
@@ -48,6 +50,8 @@ const Home = () => {
     }
   };
 
+
+
   const radioButtonValueChange = (event: any) => {
     const page = event.target.defaultValue;
 
@@ -56,11 +60,12 @@ const Home = () => {
 
   const createCards = (requiredType: string) => {
 
-    // const generatedDisplayedCards = fetchedEarphones.filter((contentType:any ) => (
-    //   contentType.category.toLowerCase() === requiredType
-    // ))
+    const generatedDisplayedCards = fetchedEarphones.filter((contentType:any ) => (
+      contentType.category.toLowerCase() === requiredType
+    ))
 
-    const generatedDisplayedCards = fetchedEarphones.map((earphone: any) => (
+
+    return generatedDisplayedCards.map((earphone: any) => (
       <Card
         slideContent={earphone}
         key={earphone._id}
@@ -69,7 +74,7 @@ const Home = () => {
         addToCartClicked={addToCartHandler}
       />
     ));
-    return generatedDisplayedCards;
+    // return generatedDisplayedCards;
   };
 
   const onCardClicked = (id: any) => {
@@ -77,9 +82,24 @@ const Home = () => {
     console.log("clicked");
   };
 
-  const addToCartHandler = (e: any) => {
+  const addToCartHandler =  async (e: any, cartItem: addToCartPayload)=> {
+    const cart = {cart: [cartItem]};
+    
+    console.log(e)
     e.stopPropagation();
-    console.log("add to cart clicked");
+    try {
+      setIsLoading(true);
+       const apiResponse = await sendRequest(addToCart, cart);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        console.log(apiResponse)
+      }
+      // setFetchedEarphones(apiResponse.data);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching products upload ${error}`);
+    }
+    // console.log("add to cart clicked");
   };
 
   const newProductPages = [
@@ -101,8 +121,8 @@ const Home = () => {
     },
   ];
 
-  const headPhones: any = createCards('headphones');
-  const speakers: any = createCards('speakers');
+  const headPhones: any = createCards('headphone');
+  const speakers: any = createCards('speaker');
 
   return (
     <Fragment>

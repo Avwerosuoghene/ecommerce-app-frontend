@@ -83,17 +83,24 @@ const ProductInfo = () => {
             <img src={baseImagePath + product?.image} alt="" />
           </div>
           <div className={classes.new_product_heading}>
-            <div className={classes.top_el}>
+            
+          <div className={classes.top_el}>
               <h4 className={classes.newP}>NEW PRODUCT</h4>
+            </div>
+            <h2>{product?.title}</h2>
+            <p>{product?.description}</p>
+
+        
+
+          
+          </div>
+          <div className={classes.ratings_actions}>
+          <div className={classes.top_el}>
               <NavLink to={`/main/home`} className={classes.goBack_navlink}>
                 Go Back
               </NavLink>
             </div>
-
-            <h2>{product?.title}</h2>
-            <p>{product?.description}</p>
-
-            <div className={classes.price_rating}>
+          <div className={classes.price_rating}>
               <h4>$ {product?.price}</h4>
               <div className={classes.rating}>
                 <div className={classes.stars}>
@@ -106,8 +113,7 @@ const ProductInfo = () => {
                 <h4 className={classes.verified}>(12 verified Rating)</h4>
               </div>
             </div>
-
-            <div className={classes.action}>
+          <div className={classes.action}>
               <div className={classes.product_items_adjust}>
                 <IconButton
                   aria-label="substract"
@@ -145,6 +151,7 @@ const ProductInfo = () => {
               </Button>
             </div>
           </div>
+      
         </div>
 
         <div className={classes.features_contained}>

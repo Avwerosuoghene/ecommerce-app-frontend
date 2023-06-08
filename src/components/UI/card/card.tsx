@@ -4,6 +4,7 @@ import StarIcon from '@mui/icons-material/Star';
 import { Fragment, useEffect, useState } from "react";
 import { IconButton } from "@mui/material";
 import Button from "../button/Button";
+import { cartType } from "../../../models/payload";
 
 const Card = (props: any) => {
   const [contentLiked, setContentLiked] = useState(false);
@@ -72,7 +73,9 @@ const Card = (props: any) => {
       <Button
             type="button"
             design="orange"
-            onClick = {props.addToCartClicked}
+            onClick = {(event:any) => {
+              props.addToCartClicked(event, {product: props.slideContent._id, quantity: 1, type: cartType.single})
+            } }
             style={classes.card_button}
             // onMouseDown={(e: any) => e.stopPropagation()}
           >

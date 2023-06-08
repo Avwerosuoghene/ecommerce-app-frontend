@@ -18,22 +18,25 @@ const useHttp = () => {
     } else {
       asyncResponse = await httpFunction()
     }
+    if (asyncResponse.response) {
+      asyncResponse= asyncResponse.response
+    }
   
     console.log(asyncResponse);
-    if (!asyncResponse.response && !asyncResponse.response.data) {
+    if (!asyncResponse && !asyncResponse.data) {
       message = asyncResponse.message;
       openSnackBarAction(message, "error");
       return false;
     }
 
-    const isSuccess = asyncResponse.response.data.isSuccess;
+    const isSuccess = asyncResponse.data.isSuccess;
     if (isSuccess === true) {
-      message = asyncResponse.response.data.message;
-      const data = asyncResponse.response.data;
+      message = asyncResponse.data.message;
+      const data = asyncResponse.data;
       openSnackBarAction(message, "success");
       return data;
     }
-    message = asyncResponse.response.data.message;
+    message = asyncResponse.data.message;
     // console.log(asyncResponse.response.data.data[0].message);
     // message = asyncResponse.response.data.data
     //   ?asyncResponse.response.data.data[0].message

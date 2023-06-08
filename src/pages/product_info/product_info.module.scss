@@ -64,8 +64,9 @@ p {
 
   .product_display {
     width: 100%;
-    display: flex;
+    display: grid;
     gap: 50px;
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
 
     .image_container {
@@ -74,58 +75,67 @@ p {
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #97979729;
+      // background-color: #97979729;
 
+      padding: 50px 0 20px 0;
       img {
-        width: 100%;
+        object-fit: contain;
+        height: 95%;
       }
     }
 
     .new_product_heading {
-      height: 420px;
+      height: 100%;
       width: 450px;
+      padding: 50px 0 20px 0;
+     
 
-      .top_el {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
+     
+    }
+    .top_el {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
 
-        .goBack_navlink {
-          font-size: 16px;
-          font-family: "manropeSemiBold";
-          text-decoration: none;
-          color: #000;
-        }
+      .goBack_navlink {
+        font-size: 16px;
+        font-family: "manropeSemiBold";
+        text-decoration: none;
+        color: #000;
       }
+    }
+    .ratings_actions {
+      height: 100%;
+      padding: 50px 0 20px 0;
+    }
 
-      .price_rating {
+    .price_rating {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-block: 40px;
+
+      .rating {
         display: flex;
-        justify-content: space-between;
+        gap: 12px;
+      }
+    }
+
+    .action {
+      display: flex;
+      gap: 20px;
+      .product_items_adjust {
+        height: 42px;
+        padding: 0 5px;
+        background-color: #97979729;
+        display: flex;
         align-items: center;
-        margin-block: 40px;
-
-        .rating {
-          display: flex;
-          gap: 12px;
-        }
+        justify-content: space-between;
+        width: 120px;
       }
-
-      .action {
-        display: flex;
-        gap: 20px;
-        .product_items_adjust {
-          height: 42px;
-          padding: 0 5px;
-          background-color: #97979729;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 120px;
-        }
-        .product_cart_button {
-          padding: 0 16px;
-        }
+      .product_cart_button {
+        padding: 0 16px;
       }
     }
   }

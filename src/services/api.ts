@@ -5,6 +5,7 @@ import {
   IsignUpPayload,
 } from "../models/types";
 import axios from "axios";
+import { addToCartPayload, addToCartResponse } from "../models/payload";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -143,6 +144,25 @@ export const deleteProductById = async (productId: any) => {
       }
     );
     return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+export const addToCart = async (cartItem: addToCartPayload) => {
+  try {
+    const response:{message: string, isSuccess: boolean, data: any}  = await axios.post(
+      `${baseUrl}/cart`,
+      cartItem,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return response;
   } catch (error: any) {
     console.log(error);
     const errorRes = error;
