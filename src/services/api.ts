@@ -76,7 +76,7 @@ export const postUpload = async (postUploadPayload: IpostUploadPayload) => {
   }
 };
 
-export const editUpload = async (payload: {formData: string, id: string}) => {
+export const editUpload = async (payload: { formData: string, id: string }) => {
   try {
     const response = await axios.put(
       `${baseUrl}admin/product/${payload.id}`,
@@ -99,6 +99,22 @@ export const editUpload = async (payload: {formData: string, id: string}) => {
 export const getProducts = async () => {
   try {
     const response = await axios.get(`${baseUrl}products`);
+    return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+export const getCart = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}cart`, {
+      headers: {
+        Authorization: getAuthToken(),
+        // 'content-type': 'multipart/form-data'
+      },
+    });
     return { response };
   } catch (error: any) {
     console.log(error);
@@ -153,7 +169,7 @@ export const deleteProductById = async (productId: any) => {
 
 export const addToCart = async (cartItem: addToCartPayload) => {
   try {
-    const response:{message: string, isSuccess: boolean, data: any}  = await axios.post(
+    const response: { message: string, isSuccess: boolean, data: any } = await axios.post(
       `${baseUrl}/cart`,
       cartItem,
       {

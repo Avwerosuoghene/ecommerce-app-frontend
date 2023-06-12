@@ -43,4 +43,11 @@ export interface ProductI{
   
 }
 
+export interface CartItem {
+  product: Pick<ProductI, '_id' | 'title' | 'price' | 'image'>,
+  quantity: number,
+  _id: string,
+  sum: number
+}
+
 

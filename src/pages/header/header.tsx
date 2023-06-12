@@ -20,7 +20,9 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const openCartHandler = (e: any) => {
     setOpen(true);
+   
   };
+
 
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -122,7 +124,7 @@ const Header = () => {
           </IconButton>
         </MenuItem>
       </Menu>
-      <CheckoutDialog open={open} onClose={handleDialogClose} />
+     {open && <CheckoutDialog open={open} onClose={handleDialogClose} />}
     </nav>
   );
 };

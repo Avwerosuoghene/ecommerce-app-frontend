@@ -77,6 +77,7 @@ const Card = (props: any) => {
               props.addToCartClicked(event, {product: props.slideContent._id, quantity: 1, type: cartType.single})
             } }
             style={classes.card_button}
+            disabled= {props.isLoading}
             // onMouseDown={(e: any) => e.stopPropagation()}
           >
             ADD TO CART

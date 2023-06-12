@@ -11,7 +11,7 @@ export type getProductByIdResponse = Omit<IpostUploadPayload, "userId"> & {
 };
 
 export interface addToCartPayload {
-  product: string;
+  product: {id: String, price: number};
   quantity: number;
   type: cartType
 }

@@ -72,6 +72,7 @@ const Home = () => {
         onCardClick={() => onCardClicked(earphone._id)}
         card_container={classes.cardContainer}
         addToCartClicked={addToCartHandler}
+        isLoading = {isLoading}
       />
     ));
     // return generatedDisplayedCards;
