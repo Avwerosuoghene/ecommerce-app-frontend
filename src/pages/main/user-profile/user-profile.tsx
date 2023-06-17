@@ -2,6 +2,10 @@ import Button from "../../../components/UI/button/Button";
 import classes from "./user-profile.module.scss";
 import { useEffect, useReducer, useState, useRef } from "react";
 import CusForm from "../../../components/form/form";
+import { currentUserI } from "../../../models/types";
+import { LinearProgress } from "@mui/material";
+import useHttp from "../../../hooks/useHttp";
+import { getCurrentUser, updateProfile } from "../../../services/api";
 
 const emailTest = new RegExp("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$");
 
@@ -92,8 +96,10 @@ const UserProfile = (props: any) => {
     isValid: false,
     touched: false,
   });
-  const [imageFile, setImageFile] : any = useState();
-  const imageInputRef : any = useRef();
+  const [imageFile, setImageFile]: any = useState();
+  const imageInputRef: any = useRef();
+
+  const [currentUser, setCurrentUser] = useState<currentUserI>()
 
   const { isValid: emailIsValid } = emailState;
   const { isValid: userNameIsValid } = userNameState;
@@ -104,18 +110,47 @@ const UserProfile = (props: any) => {
     event.preventDefault();
   };
 
+  const { sendRequest } = useHttp();
+
   useEffect(() => {
     console.log(imageFile)
-  }, [imageFile])
 
-  
+  }, [imageFile]);
 
   useEffect(() => {
-    dispatchEmaiil({ type: "INPUT", value: "kesuion1@gmail.com" });
-    dispatchUserName({ type: "INPUT", value: "Avwerosuoghene Darhare-Igben" });
-    dispatchPhone({ type: "INPUT", value: "08062090223" });
-    dispatchAddress({ type: "INPUT", value: "31 Akabueze Alayande Town" });
+    dispatchEmaiil({ type: "INPUT", value: currentUser?.email ? currentUser.email : '' });
+    dispatchUserName({ type: "INPUT", value: currentUser?.name ? currentUser.name : '' });
+    dispatchPhone({ type: "INPUT", value: currentUser?.phone ? currentUser.phone : '' });
+    dispatchAddress({ type: "INPUT", value: currentUser?.address ? currentUser?.address : '' });
+  }, [currentUser])
+
+
+
+
+  useEffect(() => {
+
+
+    fetchUser();
+
+
   }, []);
+
+  const fetchUser = async () => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(getCurrentUser);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        setCurrentUser(apiResponse.data);
+        console.log(currentUser)
+
+      }
+
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching user ${error}`);
+    }
+  }
 
   useEffect(() => {
     const effectsSession = setTimeout(() => {
@@ -127,6 +162,8 @@ const UserProfile = (props: any) => {
       clearTimeout(effectsSession);
     };
   }, [emailIsValid, userNameIsValid, addressIsValid]);
+
+  const baseImagePath = process.env.REACT_APP_IMAGE_URL;
 
   const userNameValidatorHandler = () => {
     dispatchUserName({ type: "BLUR" });
@@ -162,19 +199,78 @@ const UserProfile = (props: any) => {
     dispatchAddress({ type: "INPUT", value: event.target.value });
   };
 
-  const onSaveForm = (event: any) => {
+  const onSaveForm = async (event: any) => {
     event.preventDefault();
+    let formData = new FormData();
+    if (imageFile?.file) {
+      formData.append("image", imageFile.file);
+    }
+    formData.append("phone", phoneState.value);
+    formData.append("email", emailState.value);
+    formData.append("name", userNameState.value);
+    formData.append("address", addressState.value);
+    formData.append("remove", JSON.stringify(false));
+
+
+    try {
+      setIsLoading(true);
+      let apiResponse;
+      apiResponse = await sendRequest(updateProfile, formData);
+
+
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+
+
+      }
+
+      console.log(apiResponse);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in profile update ${error}`);
+    }
   }
 
 
-   const handleImageChange = (e: any) => {
+  const handleImageChange = (e: any) => {
 
-      setImageFile(URL.createObjectURL(e.target.files[0]));
-   
+    setImageFile({
+      file: e.target.files[0],
+      url: URL.createObjectURL(e.target.files[0]),
+    });
+
   }
 
-  const onRemoveImage = () => {
-    setImageFile(null)
+  const onRemoveImage = async () => {
+    const newCurrent = currentUser!;
+    newCurrent!.image = '';
+    setImageFile(undefined);
+    setCurrentUser(newCurrent);
+
+    let formData = new FormData();
+    formData.append("phone", phoneState.value);
+    formData.append("email", emailState.value);
+    formData.append("name", userNameState.value);
+    formData.append("address", addressState.value);
+    formData.append("remove", JSON.stringify(true));
+
+    try {
+      setIsLoading(true);
+      let apiResponse;
+      apiResponse = await sendRequest(updateProfile, formData);
+
+
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+
+
+      }
+
+      console.log(apiResponse);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in profile update ${error}`);
+    }
   };
 
   const clearFileInput = () => {
@@ -185,9 +281,9 @@ const UserProfile = (props: any) => {
     // const imageInput = document.getElementById("imageChangeInput");
     imageInputRef.current.click();
 
-    
 
-};
+
+  };
 
   const profileUpdateForm = [
     {
@@ -264,14 +360,22 @@ const UserProfile = (props: any) => {
 
   return (
     <section className={classes.profile_container}>
+      {isLoading && <LinearProgress />}
       <div className={classes.profile_content}>
         <h1>USER PROFILE</h1>
 
         <div className={classes.img_form_container}>
           <div className={classes.image_area}>
-            {!imageFile &&   <img  src=" /images/sample_image.png" />}
-            {imageFile &&   <img  src={imageFile} />}
-          
+            {(!currentUser?.image &&
+              !imageFile) &&
+              <img src=" /images/user.png" alt="user" />}
+            {(!currentUser?.image &&
+              imageFile) &&
+              <img src={imageFile.url} alt="user" />}
+            {currentUser?.image &&
+              <img src={baseImagePath +
+                currentUser.image} alt='user' />}
+
 
             <div className={classes.img_actions}>
               <Button
@@ -280,63 +384,76 @@ const UserProfile = (props: any) => {
                 onClick={onChangeImage}
                 style={classes.img_btn}
               >
-                CHANGE
+                {
+                  !currentUser?.image ? 'ADD' : 'CHANGE'
+                }
+
               </Button>
-              <input type="file" onChange={handleImageChange}    style={{ display: "none" }} ref = {imageInputRef}   onClick={clearFileInput}  />
-              <Button
-                type="button"
-                design="outline"
-                onClick={onRemoveImage}
-                style={classes.img_btn}
-              >
-                REMOVE
-              </Button>
+              <input type="file"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+                ref={imageInputRef}
+                onClick={clearFileInput} />
+              {
+                currentUser?.image && <Button
+                  type="button"
+                  design="outline"
+                  onClick={onRemoveImage}
+                  style={classes.img_btn}
+                >
+                  REMOVE
+                </Button>
+              }
+
             </div>
           </div>
           <div className={classes.form_area}>
-          <form onSubmit={formSubmissionHandler} className={classes.userProfile_form}>
-          {profileUpdateForm.map((form: any) => (
-              <CusForm
-                key={form.label}
-                formControlStyle={form.formControlStyle}
-                labelFor={form.labelFor}
-                label={form.label}
-                placeholder={form.placeholder}
-                inputState={form.inputState}
-                //   startAdornmentIcon={
-                //     form.startAdornmentIcon && form.startAdornmentIcon
-                //   }
-                //   endAdornmentIcon={
-                //     form.endAdornmentIcon && form.endAdornmentIcon
-                //   }
-                height={20}
-                endAdornmentIconClick={
-                  form.endAdornmentIconClick && form.endAdornmentIconClick
-                }
-                endAdornmentIconMouseDown={
-                  form.endAdornmentIconMouseDown &&
-                  form.endAdornmentIconMouseDown
-                }
-                inputChangeHandler={form.inputChangeHandler}
-                inputValidator={form.inputValidator}
-                errorMessage={form.errorMessage}
-                type={form.type}
-                error={form.error}
-              />
-            ))}
-            <div className={classes.form_actions}>
-              <Button
-                type="submit"
-                design="orange"
-                style={classes.save_btn}
+            <form onSubmit={formSubmissionHandler}
+              className={classes.userProfile_form}>
+              {profileUpdateForm.map((form: any) => (
+                <CusForm
+                  key={form.label}
+                  formControlStyle={form.formControlStyle}
+                  labelFor={form.labelFor}
+                  label={form.label}
+                  placeholder={form.placeholder}
+                  inputState={form.inputState}
+                  //   startAdornmentIcon={
+                  //     form.startAdornmentIcon && form.startAdornmentIcon
+                  //   }
+                  //   endAdornmentIcon={
+                  //     form.endAdornmentIcon && form.endAdornmentIcon
+                  //   }
+                  height={20}
+                  endAdornmentIconClick={
+                    form.endAdornmentIconClick &&
+                    form.endAdornmentIconClick
+                  }
+                  endAdornmentIconMouseDown={
+                    form.endAdornmentIconMouseDown &&
+                    form.endAdornmentIconMouseDown
+                  }
+                  inputChangeHandler={form.inputChangeHandler}
+                  inputValidator={form.inputValidator}
+                  errorMessage={form.errorMessage}
+                  type={form.type}
+                  error={form.error}
+                />
+              ))}
+              <div className={classes.form_actions}>
+                <Button
+                  type="submit"
+                  design="orange"
+                  style={classes.save_btn}
+                  onClick={onSaveForm}
 
-              >
-                SAVE
-              </Button>
-      
-            </div>
-          </form>
-          
+                >
+                  SAVE
+                </Button>
+
+              </div>
+            </form>
+
           </div>
         </div>
       </div>

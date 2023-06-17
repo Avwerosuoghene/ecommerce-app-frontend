@@ -8,6 +8,7 @@ export enum cartType {
 export type getProductByIdResponse = Omit<IpostUploadPayload, "userId"> & {
   rating: number;
   reviews: number;
+  _id: string
 };
 
 export interface addToCartPayload {

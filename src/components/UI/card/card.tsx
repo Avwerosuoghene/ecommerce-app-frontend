@@ -74,7 +74,7 @@ const Card = (props: any) => {
             type="button"
             design="orange"
             onClick = {(event:any) => {
-              props.addToCartClicked(event, {product: props.slideContent._id, quantity: 1, type: cartType.single})
+              props.addToCartClicked(event, {product: props.slideContent._id, quantity: 1 })
             } }
             style={classes.card_button}
             disabled= {props.isLoading}

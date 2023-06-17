@@ -1,5 +1,6 @@
 import { Dialog, DialogContent } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { CartItem } from "../../../models/types";
 import Button from "../../UI/button/Button";
 
 import classes from "./success.module.scss";
@@ -10,6 +11,8 @@ const SuccessDialog = (props: any) => {
   const handleClose = () => {
     props.onClose("dialog closed");
   };
+
+  const baseImagePath = process.env.REACT_APP_IMAGE_URL;
 
   const continueBtnClicked = () => {
     props.onClose();
@@ -68,32 +71,32 @@ const SuccessDialog = (props: any) => {
         <div className={classes.success_summary}>
           <div className={classes.items_listing}>
             <div className={classes.cart_items}>
-              {purchasedItems.map((item) => (
-                <div className={classes.dialog_cart_item} key={item.idx}>
+              {props.order.cartItems.map((item:CartItem) => (
+                <div className={classes.dialog_cart_item} key={item._id}>
                   <div className={classes.img_price}>
                     <div className={classes.dialog_image_container}>
-                      <img src={item.image} alt="" />
+                      <img src={baseImagePath + item.product.image} alt="" />
                     </div>
                     <div className={classes.dialog_itemName_price}>
-                      <strong>{item.name}</strong>
-                      <p>$ {item.price}</p>
+                      <strong>{item.product.title}</strong>
+                      <p>$ {item.sum}</p>
                     </div>
                   </div>
-                  <p>x {item.qty}</p>
+                  <p>x {item.quantity}</p>
                 </div>
               ))}
             </div>
             <hr />
-            <a href="">
+            {/* <a href="">
             View less
-            </a>
+            </a> */}
           </div>
           <div className={classes.total}>
             <h5>
                 GRAND TOTAL
             </h5>
             <h5 className={classes.amount}>
-                $ 5,446
+                $ {props.order.total}
             </h5>
           </div>
         </div>

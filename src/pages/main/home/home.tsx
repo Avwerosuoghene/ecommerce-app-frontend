@@ -9,7 +9,7 @@ import Card from "../../../components/UI/card/card";
 import useHttp from "../../../hooks/useHttp";
 import { addToCart, getProducts } from "../../../services/api";
 import { ProductI } from "../../../models/types";
-import { addToCartPayload, addToCartResponse } from "../../../models/payload";
+import { addToCartPayload, addToCartResponse, cartType } from "../../../models/payload";
 
 const Home = () => {
   const [radioBtnCheck, setRadioButtonCheck] = useState("first_page");
@@ -84,9 +84,8 @@ const Home = () => {
   };
 
   const addToCartHandler =  async (e: any, cartItem: addToCartPayload)=> {
-    const cart = {cart: [cartItem]};
+    const cart = {cart: [cartItem], type: cartType.single};
     
-    console.log(e)
     e.stopPropagation();
     try {
       setIsLoading(true);

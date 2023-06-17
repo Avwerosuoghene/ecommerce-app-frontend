@@ -50,4 +50,16 @@ export interface CartItem {
   sum: number
 }
 
+export interface currentUserI {
+  email: string;
+  id: string;
+  name: string;
+  address: string;
+  image: string;
+  userType: string;
+  phone: string
+}
+
+
+
 

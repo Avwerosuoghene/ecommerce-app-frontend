@@ -3,15 +3,16 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import classes from "./checkout_dialog.module.scss";
-import UIButton from "../../UI/button/Button";
 import { useNavigate } from "react-router-dom";
 import Button from "../../UI/button/Button";
 import { useEffect, useState } from "react";
 import useHttp from "../../../hooks/useHttp";
-import { getCart } from "../../../services/api";
+import { addToCart, clearCart, getCart, removeFromToCart } from "../../../services/api";
 import { CartItem } from "../../../models/types";
+import { cartType } from "../../../models/payload";
 
 const CheckoutDialog = (props: any) => {
 
@@ -23,27 +24,85 @@ const CheckoutDialog = (props: any) => {
   const baseImagePath = process.env.REACT_APP_IMAGE_URL;
   const [totalAmount, setTotalAmount] = useState<number>(0);
 
+  
+
 
   const handleClose = () => {
 
     props.onClose("dialog closed");
   };
 
-  const onSave = () => {
+  const onSave = async () => {
 
+    const reformatedCart = cartItems.map(cartItem => {
+      return { product: cartItem.product._id, quantity: cartItem.quantity }
+    })
+
+    const cart = { cart: [...reformatedCart], type: cartType.bulk };
+
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(addToCart, cart);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        console.log(apiResponse)
+      }
+      setCartItemQtyTouched(false);
+      // setFetchedEarphones(apiResponse.data);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in adding cartItems  ${error}`);
+    }
   };
 
   const decreaseProductSelection = (index: number) => {
     const updatedCart = [...cartItems];
-    if (updatedCart[index].quantity !== 0) {
+    if (updatedCart[index].quantity > 1) {
 
       updatedCart[index].quantity -= 1;
       updatedCart[index].sum -= updatedCart[index].product.price
+      if (updatedCart[index].quantity === 0) {
+
+      }
       setTotalAmount(totalAmount - updatedCart[index].product.price);
       setCartItems(updatedCart)
       setCartItemQtyTouched(true)
     }
 
+  }
+
+  const onDeleteCartItem = async (cartItemId: string) => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(removeFromToCart, cartItemId);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        console.log(apiResponse)
+      }
+      fetchCartItems();
+      setCartItemQtyTouched(false)
+      // setFetchedEarphones(apiResponse.data);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in adding cartItems  ${error}`);
+    }
+  }
+
+  const onRemoveAllItems = async () => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(clearCart);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        console.log(apiResponse)
+      }
+      fetchCartItems();
+      setCartItemQtyTouched(false)
+      // setFetchedEarphones(apiResponse.data);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in adding cartItems  ${error}`);
+    }
   }
 
   const increaseProductSelection = (index: number) => {
@@ -84,36 +143,6 @@ const CheckoutDialog = (props: any) => {
     }
   }
 
-  // const cartItems = [
-  //   {
-  //     image: "/images/headphone1.png",
-  //     name: "XX99 MK II",
-  //     price: 2999,
-  //     qty: 1,
-  //     idx: 0,
-  //   },
-  //   {
-  //     image: "/images/headphone1.png",
-  //     name: "XX99 MK II",
-  //     price: 4999,
-  //     qty: 2,
-  //     idx: 1,
-  //   },
-  //   {
-  //     image: "/images/headphone1.png",
-  //     name: "XX99 MK II",
-  //     price: 4999,
-  //     qty: 1,
-  //     idx: 2,
-  //   },
-  //   {
-  //     image: "/images/headphone1.png",
-  //     name: "XX99 MK II",
-  //     price: 4999,
-  //     qty: 1,
-  //     idx: 3,
-  //   },
-  // ];
 
   return (
     <Dialog
@@ -129,7 +158,11 @@ const CheckoutDialog = (props: any) => {
 
         <div className={classes.dialog_header}>
           <h4>CART {cartItems.length !== 0 ? cartItems.length : ''}</h4>
-          <h5 className={classes.orange}>Remove all</h5>
+
+          {
+            cartItems.length >= 1 && <Button variant="text" className={classes.clearCart_btn} onClick={onRemoveAllItems} >Remove all</Button>
+          }
+
         </div>
         {/* <div className={classes.dialog_body}> */}
 
@@ -182,6 +215,23 @@ const CheckoutDialog = (props: any) => {
                     />
                   </IconButton>
                 </div>
+                {
+                  cartItem.quantity === 1 && <IconButton
+                    aria-label="add"
+                    color="primary"
+                    className={classes.delete_btn}
+                    onClick={() => {
+                      onDeleteCartItem(cartItem._id)
+                    }}
+                  >
+                    <DeleteIcon
+                      sx={{ color: "#d11a2a", fontSize: 24 }}
+                      className={classes.delete}
+
+                    />
+                  </IconButton>
+                }
+
               </div>
             ))}
 
@@ -207,19 +257,23 @@ const CheckoutDialog = (props: any) => {
             >
               CONTINUE SHOPPING
             </Button>
-            <Button
-              type="button"
-              design="orange"
-              onClick={addToCartHandler}
-              style={classes.dialog_checkout_button}
-            >
-              CHECKOUT
-            </Button>
+            {
+              cartItems.length >= 1 && <Button
+                type="button"
+                design="orange"
+                onClick={addToCartHandler}
+                style={classes.dialog_checkout_button}
+              >
+                CHECKOUT
+              </Button>
+            }
+
             {cartItemQtyTouched && <Button
               type="button"
               design="orange"
               onClick={onSave}
               style={classes.dialog_save_button}
+              disabled={isLoading}
             >
               SAVE
             </Button>}

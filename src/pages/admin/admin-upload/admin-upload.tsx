@@ -253,12 +253,11 @@ const AdminUpload = () => {
   };
 
   const handleImageChange = (e: any) => {
-    console.log(e.target.files[0]);
     setImageFile({
       file: e.target.files[0],
       url: URL.createObjectURL(e.target.files[0]),
     });
-    console.log(imageFile);
+
   };
 
   const imageDragOverHandler = (event: any) => {

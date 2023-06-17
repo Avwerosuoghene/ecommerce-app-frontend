@@ -6,7 +6,7 @@ import { ReactComponent as CartIcon } from "../../assets/images/Cart.svg";
 import classes from "./header.module.scss";
 import SearchField from "../../components/UI/searchField/search-field";
 import CheckoutDialog from "../../components/dialogs/checkout-dialog/checkout_dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AccountMenu from "../../components/dialogs/account-menu/account-menu";
 import { Avatar, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { Logout } from "@mui/icons-material";
@@ -15,12 +15,15 @@ import { ReactComponent as LogoutIcon } from "../../assets/images/Logout.svg";
 import { useDispatch } from "react-redux";
 import { authActions } from "../../redux/store/auth";
 import { useNavigate } from "react-router-dom";
+import useHttp from "../../hooks/useHttp";
+import { currentUserI } from "../../models/types";
+import { getCurrentUser } from "../../services/api";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const openCartHandler = (e: any) => {
     setOpen(true);
-   
+
   };
 
 
@@ -32,6 +35,7 @@ const Header = () => {
   const handleDialogClose = (value: string) => {
     setOpen(false);
   };
+  const baseImagePath = process.env.REACT_APP_IMAGE_URL;
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -50,6 +54,32 @@ const Header = () => {
   };
 
   const dispatch = useDispatch();
+
+  const [currentUser, setCurrentUser] = useState<currentUserI>();
+  const { sendRequest } = useHttp();
+
+
+  useEffect(() => {
+
+
+    fetchUser();
+
+
+  }, []);
+
+  const fetchUser = async () => {
+    try {
+      const apiResponse = await sendRequest(getCurrentUser);
+      if (apiResponse.isSuccess) {
+        setCurrentUser(apiResponse.data);
+        console.log(currentUser)
+
+      }
+
+    } catch (error) {
+      console.log(`error in fetching user ${error}`);
+    }
+  }
 
   return (
     <nav className={classes.nav_container}>
@@ -79,7 +109,11 @@ const Header = () => {
 
           <IconButton onClick={handleMenuOpen} disableRipple>
             <div className={classes.nav_profile_img}>
-              <img src="/images/dp_placeholder.png" alt="" />
+              {!currentUser?.image &&
+                <img src=" /images/user.png" alt="user" />}
+              {currentUser?.image &&
+                <img src={baseImagePath +
+                  currentUser.image} alt='user' />}
             </div>
           </IconButton>
           {/* <AccountMenu open = {openMenu} /> */}
@@ -124,7 +158,7 @@ const Header = () => {
           </IconButton>
         </MenuItem>
       </Menu>
-     {open && <CheckoutDialog open={open} onClose={handleDialogClose} />}
+      {open && <CheckoutDialog open={open} onClose={handleDialogClose} />}
     </nav>
   );
 };

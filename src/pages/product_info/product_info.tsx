@@ -8,21 +8,60 @@ import { NavLink, useParams } from "react-router-dom";
 import classes from "./product_info.module.scss";
 import Button from "../../components/UI/button/Button";
 import CheckoutDialog from "../../components/dialogs/checkout-dialog/checkout_dialog";
-import { getProductById } from "../../services/api";
+import { addToCart, getProductById } from "../../services/api";
 import useHttp from "../../hooks/useHttp";
-import { getProductByIdResponse } from "../../models/payload";
+import { cartType, getProductByIdResponse } from "../../models/payload";
 
 const ProductInfo = () => {
   const [open, setOpen] = useState(false);
   const baseImagePath = process.env.REACT_APP_IMAGE_URL;
 
-  const addToCartHandler = (e: any) => {
-    setOpen(true);
+  const [itemQty, setItemQty] = useState <number>(1) 
+
+  const addToCartHandler = async (e: any) => {
+
+    // setOpen(true);
+    const cart = {cart: [
+      {product: product!._id, quantity: itemQty }
+    ], type: cartType.single};
+    
+    e.stopPropagation();
+    try {
+      setIsLoading(true);
+       const apiResponse = await sendRequest(addToCart, cart);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        console.log(apiResponse)
+        openCart();
+      }
+      // setFetchedEarphones(apiResponse.data);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching products upload ${error}`);
+    }
+
   };
+
+  const openCart = () => {
+    setOpen(true);
+  }
+
+  
 
   const { id } = useParams();
 
-  const increaseProductSelection = () => {};
+  const increaseProductSelection = () => {
+    const newQty = itemQty+1
+    setItemQty(newQty)
+  };
+
+  const decreaseProductSelection = () => {
+    const newQty = itemQty-1;
+    if (newQty >=1)
+    setItemQty(newQty)
+  };
+
+
 
   const handleDialogClose = (value: string) => {
     setOpen(false);
@@ -45,6 +84,7 @@ const ProductInfo = () => {
       setIsLoading(false);
       if (apiResponse.isSuccess) {
         const {
+          _id,
           category,
           description,
           features,
@@ -56,6 +96,7 @@ const ProductInfo = () => {
           reviews,
         } = apiResponse.data;
         setProduct({
+          _id,
           category,
           description,
           features,
@@ -73,7 +114,7 @@ const ProductInfo = () => {
     }
   };
 
-  const decreaseProductSelection = () => {};
+
   return (
     <Fragment>
       {isLoading && <LinearProgress />}
@@ -127,7 +168,7 @@ const ProductInfo = () => {
                   />
                 </IconButton>
 
-                <h4>1</h4>
+                <h4>{itemQty}</h4>
 
                 <IconButton
                   aria-label="add"
@@ -298,7 +339,7 @@ const ProductInfo = () => {
         </div>
       </section>
 
-      <CheckoutDialog open={open} onClose={handleDialogClose} />
+      {open && <CheckoutDialog open={open} onClose={handleDialogClose} />}
     </Fragment>
   );
 };

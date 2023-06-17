@@ -1,17 +1,18 @@
 import {
-  createTheme,
-  FormControlLabel,
+
   Radio,
-  RadioGroup,
+  LinearProgress,
 } from "@mui/material";
-import { pink, purple } from "@mui/material/colors";
+
 import { Fragment, useEffect, useReducer, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import SuccessDialog from "../../../components/dialogs/success-dialog/success_dialog";
 import CusForm from "../../../components/form/form";
 import { HelperComponent } from "../../../components/helper/helper.component";
 import Button from "../../../components/UI/button/Button";
 import useHttp from "../../../hooks/useHttp";
+import { CartItem } from "../../../models/types";
+import { getCart, placeOrder } from "../../../services/api";
 import classes from "./checkout.module.scss";
 
 
@@ -19,6 +20,7 @@ import classes from "./checkout.module.scss";
 
 const Checkout: React.FC<any> = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [order, setOrder] = useState<{total: number, cartItems: Array<CartItem>}>({total:0, cartItems: []})
 
   const helperComponent = new HelperComponent();
 
@@ -96,14 +98,36 @@ const Checkout: React.FC<any> = () => {
     countryIsValid,
   ]);
 
-  const checkoutHandler = () => {
-    setOpen(true);
+  useEffect(() => {
+    fetchCartItems()
+  }, []);
+
+  const checkoutHandler = async () => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(placeOrder);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        setOrder({
+          total: apiResponse.data.total,
+          cartItems: apiResponse.data.cart
+        });
+        setOpen(true);
+      }
+
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching products upload ${error}`);
+    }
+   
   };
 
   const handleDialogClose = (value: string) => {
     setOpen(false);
     navigate("/main/home");
   };
+
+  const { sendRequest } = useHttp();
 
   const defaultValidatorHandler = (dispatch: any,  element: string) => {
     dispatch({ type: "BLUR", element: element });
@@ -125,36 +149,28 @@ const Checkout: React.FC<any> = () => {
     setPaymentMethodState((event.target as HTMLInputElement).value);
   };
 
-  const cartItems = [
-    {
-      image: "/images/headphone1.png",
-      name: "XX99 MK II",
-      price: 2999,
-      qty: 1,
-      idx: 0,
-    },
-    {
-      image: "/images/headphone1.png",
-      name: "XX99 MK II",
-      price: 4999,
-      qty: 2,
-      idx: 1,
-    },
-    {
-      image: "/images/headphone1.png",
-      name: "XX99 MK II",
-      price: 4999,
-      qty: 1,
-      idx: 2,
-    },
-    {
-      image: "/images/headphone1.png",
-      name: "XX99 MK II",
-      price: 4999,
-      qty: 1,
-      idx: 3,
-    },
-  ];
+  const baseImagePath = process.env.REACT_APP_IMAGE_URL;
+
+  const [cartItems, setCartItems] = useState<Array<CartItem>>([]);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
+
+  const fetchCartItems = async () => {
+    try {
+      setIsLoading(true);
+      const apiResponse = await sendRequest(getCart);
+      setIsLoading(false);
+      if (apiResponse.isSuccess) {
+        setCartItems(apiResponse.data.cart)
+        setTotalAmount(apiResponse.data.total)
+        console.log(apiResponse)
+      }
+
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`error in fetching products upload ${error}`);
+    }
+  }
 
   const billingInfoForms = [
     {
@@ -275,12 +291,13 @@ const Checkout: React.FC<any> = () => {
   return (
     <Fragment>
       <section className={classes.checkout_container}>
-        <NavLink
+      {isLoading && <LinearProgress />}
+        {/* <NavLink
           to={`../product-info/${1}`}
           className={classes.checkout_navlink}
         >
           Go Back
-        </NavLink>
+        </NavLink> */}
         <div className={classes.checkout_detail_container}>
           <div className={classes.checkout_form}>
             <h3>CHECKOUT</h3>
@@ -416,28 +433,28 @@ const Checkout: React.FC<any> = () => {
 
             <div className={classes.cart_items}>
               {cartItems.map((cartItem) => (
-                <div className={classes.dialog_cart_item} key={cartItem.idx}>
+                <div className={classes.dialog_cart_item} key={cartItem._id}>
                   <div className={classes.img_price}>
                     <div className={classes.dialog_image_container}>
-                      <img src={cartItem.image} alt="" />
+                      <img src={baseImagePath + cartItem.product.image} alt="" />
                     </div>
                     <div className={classes.dialog_itemName_price}>
-                      <strong>{cartItem.name}</strong>
-                      <p>$ {cartItem.price}</p>
+                      <strong>{cartItem.product.title}</strong>
+                      <p>$ {cartItem.sum}</p>
                     </div>
                   </div>
-                  <p>x {cartItem.qty}</p>
+                  <p>x {cartItem.quantity}</p>
                 </div>
               ))}
             </div>
 
             <div className={classes.lower_elements}>
-              {amountValues.map((value) => (
-                <div className={classes.sum} key={value.name}>
-                  <strong className={classes.amount}>{value.name}</strong>
-                  <strong>$ {value.value}</strong>
+
+                <div className={classes.sum}>
+                  <strong className={classes.amount}>Total</strong>
+                  <strong>$ {totalAmount}</strong>
                 </div>
-              ))}
+      
 
               <div className={classes.action}>
                 <Button
@@ -445,6 +462,7 @@ const Checkout: React.FC<any> = () => {
                   design="orange"
                   onClick={checkoutHandler}
                   style={classes.dialog_checkout_button}
+                  disabled = {!formIsValid}
                 >
                   CONTINUE
                 </Button>
@@ -453,7 +471,7 @@ const Checkout: React.FC<any> = () => {
           </div>
         </div>
       </section>
-      <SuccessDialog open={open} onClose={handleDialogClose}></SuccessDialog>
+      <SuccessDialog open={open} onClose={handleDialogClose} order={order}></SuccessDialog>
     </Fragment>
   );
 };

@@ -1,11 +1,12 @@
 import {
+  currentUserI,
   IloginPayload,
   IpasswordResetPayload,
   IpostUploadPayload,
   IsignUpPayload,
 } from "../models/types";
 import axios from "axios";
-import { addToCartPayload, addToCartResponse } from "../models/payload";
+import { addToCartPayload } from "../models/payload";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -17,6 +18,23 @@ const getAuthToken = (): string | undefined => {
     return;
   }
 };
+
+export const getCurrentUser = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}admin/currentUser`, {
+      headers: {
+        Authorization: getAuthToken(),
+        // 'content-type': 'multipart/form-data'
+      },
+    });
+    return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
 
 export const signUp = async (signUpPayload: IsignUpPayload) => {
   console.log(baseUrl);
@@ -75,6 +93,26 @@ export const postUpload = async (postUploadPayload: IpostUploadPayload) => {
     return errorRes;
   }
 };
+
+export const updateProfile = async (uploadProfilePayload:Pick <currentUserI, 'email'|'name' | 'address' | 'phone' | 'image'>  & {remove: boolean} ) => {
+  try {
+    const response = await axios.put(
+      `${baseUrl}admin/currentUser`,
+      uploadProfilePayload,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+          // 'content-type': 'multipart/form-data'
+        },
+      }
+    );
+    return { response };
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+}
 
 export const editUpload = async (payload: { formData: string, id: string }) => {
   try {
@@ -185,3 +223,64 @@ export const addToCart = async (cartItem: addToCartPayload) => {
     return errorRes;
   }
 };
+
+
+export const removeFromToCart = async (cartItemId: string) => {
+  try {
+    const response: { message: string, isSuccess: boolean, data: any } = await axios.delete(
+      `${baseUrl}/cart/${cartItemId}`,
+
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return response;
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+
+export const clearCart = async () => {
+  try {
+    const response: { message: string, isSuccess: boolean, data: any } = await axios.delete(
+      `${baseUrl}/cart`,
+
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return response;
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+export const placeOrder = async () => {
+  try {
+    const response: { message: string, isSuccess: boolean, data: any } = await axios.post(
+      `${baseUrl}admin/createOrder`,
+      null,
+      {
+        headers: {
+          Authorization: getAuthToken(),
+        },
+      }
+    );
+    return response;
+  } catch (error: any) {
+    console.log(error);
+    const errorRes = error;
+    return errorRes;
+  }
+};
+
+
